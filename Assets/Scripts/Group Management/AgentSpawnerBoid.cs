@@ -60,6 +60,7 @@ public class AgentSpawnerBoid : MonoBehaviour
     AgentControllerBoid SpawnAgent()
     {
         GameObject pf = Instantiate(agentPrefab, transform.position, Quaternion.identity);
+        pf.name = "Agent"+"_"+Random.Range(0, 1000);
         return pf.GetComponent<AgentControllerBoid>();
         
     }

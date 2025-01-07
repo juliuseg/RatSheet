@@ -8,21 +8,22 @@ public class MovementManager
     public FlowFieldManager flowFieldManager; 
 
 
-    private List<AgentControllerBoid> agents;
+    public List<AgentControllerBoid> agents;
 
     private int id;
 
 
     public MovementManager(FlowFieldManager _flowFieldManager, List<AgentControllerBoid> _agents, int _id = 0)
     {
-        Debug.Log("MovementManager created");
         flowFieldManager = _flowFieldManager;
         agents = _agents;
         id = _id==0?Random.Range(0, 2000000):_id;
+        Debug.Log("MovementManager created with id: " + id);
+
     }
 
     public int GetAgentArrived(){
-        return agents.Where(agent => agent.arrived).Count();//arrivedHandler.GetArrived()).Count();
+        return agents.Where(agent => agent.arrivedHandler.GetArrived()).Count(); //arrived).Count();
     }
 
     public int GetAgentCount(){
