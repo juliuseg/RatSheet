@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ac8535b6a26148b9b593fc9893b37ff, type: 3}
+  m_Name: AgentStats
+  m_EditorClassIdentifier: 
+  maxSpeed: 2.5
+  maxForce: 2
+  neighborRadius: 4.25
+  separationDistance: 7.69
+  separationWeight: 9.78
+  cohesionWeight: 5.37
+  alignmentWeight: 5.52
+  boidStrength: 0.381
+  velocityInterpolation: 0.552
