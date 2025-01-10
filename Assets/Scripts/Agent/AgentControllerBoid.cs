@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
 public class AgentControllerBoid : MonoBehaviour
@@ -13,16 +14,41 @@ public class AgentControllerBoid : MonoBehaviour
     private List<AgentControllerBoid> neighbors = new List<AgentControllerBoid>(); // List of nearby agents
     public ArrivedHandler arrivedHandler;
 
-
-    private Vector2 velocity;
-
-
     private AgentAppearance agentAppearance;
+    private AgentVelocity agentVelocity;
 
     [SerializeField] private GameObject selectionCircle;
 
-    
+    public int team { get; private set; }
 
+
+    public AgentHPController health;
+
+    public void SetAgent(int  _team)
+    {
+        team = _team;
+
+        rb = GetComponent<Rigidbody2D>();
+        arrivedHandler = gameObject.AddComponent<ArrivedHandler>();
+
+        agentAppearance = new AgentAppearance(selectionCircle, GetComponent<SpriteRenderer>(), team);
+        SetupNeighborDetection();
+        agentVelocity = new AgentVelocity(rb, transform, agentStats, neighbors);
+        
+        health = GetComponent<AgentHPController>();
+        health.SetHealthInit(agentStats);
+        health.OnDeath += AgentDead;
+
+    }
+
+    private void SetupNeighborDetection()
+    {
+        col = GetComponent<CircleCollider2D>();
+        col.isTrigger = true;
+        col.radius = agentStats.neighborRadius;
+
+    }
+    
 
     public void SetMovementManager(MovementManager _movementManager)
     {
@@ -31,91 +57,89 @@ public class AgentControllerBoid : MonoBehaviour
             movementManager.RemoveAgent(this);
         }
         movementManager = _movementManager;
+        
 
-
-        rb = GetComponent<Rigidbody2D>();
-        if (arrivedHandler == null){
-            arrivedHandler = gameObject.AddComponent<ArrivedHandler>();
-        }
         arrivedHandler.Setup(movementManager, rb, neighbors);
 
-        SetupNeighborDetection();
 
         arrivedHandler.TriggerNewFlowfield();
 
-        agentAppearance = new AgentAppearance(selectionCircle, GetComponent<SpriteRenderer>());
+        agentVelocity.SetMovementManager(movementManager);
+
+
     }
 
-    
-
-    private void SetupNeighborDetection()
-    {
-        col = GetComponent<CircleCollider2D>();
-        col.isTrigger = true;
-        SetRadius();
-    }
-    
-    private void SetRadius(){
-        if (arrivedHandler.GetArrived()){
-            //col.radius = 1.0f;
-        } else if (col.radius != agentStats.neighborRadius){
-            col.radius = agentStats.neighborRadius;
+    public void AgentDead(){
+        if (movementManager != null)
+        {
+            movementManager.RemoveAgent(this);
         }
-        
+        Destroy(gameObject);
     }
-
-    
 
     private void FixedUpdate()
     {
         if (movementManager.flowFieldManager == null || agentStats == null) return;
 
-        bool checkN = arrivedHandler.UpdateArrivalStatus();
-        SetVelocity();
 
-        if (checkN) arrivedHandler.CheckNeighborsArrival();
+        
+        // Attack
+        AttackState attackState = AttackState.idle;
 
-        agentAppearance.AdjustAgentAppearance(arrivedHandler.GetArrived(), arrivedHandler.GetArrivedCorrection(), movementManager, AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Count);
+        Vector2 enemyVelocity = Vector2.zero;
+        AgentControllerBoid other = null;
 
-        SetRadius();
-
-
-    }
-
-
-    
-
-    private void SetVelocity()
-    {
-
-        Vector2 flowFieldForce = FlowFieldHandler.CalculateFlowFieldForce(transform.position, movementManager).normalized;
-        Vector2 boidForce = BoidBehavior.CalculateBoidBehaviors(AgentUtils.GetNeighborsInGroup(neighbors, movementManager), arrivedHandler.GetArrived(), transform.position, agentStats).normalized;
-
-        if (!arrivedHandler.GetArrived() || arrivedHandler.GetArrivedCorrection()){
-
-            // Calculate dot product to check if boidForce is within 90 degrees of flowFieldForce
-            float dotProduct = Vector2.Dot(flowFieldForce, boidForce);
-
-            // Only add boidForce if the dot product is positive (indicating an angle < 90 degrees)
-            Vector2 combinedForce = flowFieldForce;
-            if (dotProduct > 0)
-            {
-                combinedForce += boidForce * agentStats.boidStrength;
+        if (rb.isKinematic) rb.isKinematic = false;
+        if (movementManager.GetType() == typeof(AttackMovementManager)
+        || (movementManager.GetType() == typeof(BasicMovementManager) && arrivedHandler.GetInitialArrived()))
+        {
+            other = AgentUtils.GetClosestNeigborOnOtherTeam(neighbors, transform.position, team);
+            if (other != null){
+                print ("other: " + other);
+                bool canSee = AgentUtils.CanSeeOther(this, other);
+                if (canSee){
+                    enemyVelocity = agentVelocity.GetVelocityFromEnemy(other);
+                    print ("enemyVelocity: " + enemyVelocity);
+                }
             }
-
-
-            // Interpolate between the current velocity and the new calculated velocity
-            Vector2 targetVelocity = combinedForce.normalized * agentStats.maxSpeed;
-            velocity = Vector2.Lerp(rb.velocity, targetVelocity, agentStats.velocityInterpolation);
-            transform.position += (Vector3)velocity * Time.fixedDeltaTime*0.2f;
-            rb.velocity = velocity;
-        } else {
-            rb.velocity = Vector2.zero;
         }
+
+        if (enemyVelocity != Vector2.zero){
+            if (other != null){
+                if  (!agentVelocity.IsInAttackRange(other)){
+                    agentVelocity.SetVelocity(enemyVelocity);
+                    attackState = AttackState.movingToAttack;
+                } else {
+                    agentVelocity.SetVelocity(Vector2.zero);
+                    attackState = AttackState.attacking;
+                    rb.isKinematic = true;
+                    other.health.TakeDamage(agentStats.dps*Time.deltaTime);
+
+                }
+            }
+        } else {
+            // Movement
+            bool checkN = arrivedHandler.UpdateArrivalStatus();
+
+            Vector2 flowFieldVelocity = agentVelocity.GetVelocityFromFlowField(arrivedHandler.GetArrived(), arrivedHandler.GetArrivedCorrection());
+            
+            if (checkN) arrivedHandler.CheckNeighborsArrival();
+            
+            if (flowFieldVelocity != Vector2.zero){
+                agentVelocity.SetVelocity(flowFieldVelocity);
+                attackState = AttackState.moving;
+            } else {
+                agentVelocity.SetVelocity(Vector2.zero);
+                attackState = AttackState.idle;
+            }
+        }
+
+
+        // Appearance
+        agentAppearance.AdjustAgentAppearance(arrivedHandler.GetArrived(), arrivedHandler.GetArrivedCorrection(), attackState, movementManager, AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Count);
+
+
     }
-
-
-
 
     public void SetSelectionCircleActive(int mode) // mode 0 = off, mode 1 = highlighted in red, mode 2 = selected in green
     {
@@ -128,7 +152,10 @@ public class AgentControllerBoid : MonoBehaviour
         // Add neighbor if it's another AgentController and not this agent
         if (other.TryGetComponent(out AgentControllerBoid neighbor) && neighbor != this && !neighbors.Contains(neighbor))
         {
+            print ("neighbor added: " + other.gameObject.name + " to " + gameObject.name);
             neighbors.Add(neighbor);
+            neighbor.health.OnDeath += () => neighbors.Remove(neighbor);
+            
         }
     }
 
@@ -138,6 +165,7 @@ public class AgentControllerBoid : MonoBehaviour
         if (other.TryGetComponent(out AgentControllerBoid neighbor)  && other.isTrigger)
         {
             neighbors.Remove(neighbor);
+            neighbor.health.OnDeath -= () => neighbors.Remove(neighbor);
             //print ("neighbor removed: " + other.gameObject.GetInstanceID() + " from " + gameObject.GetInstanceID());
         }
     }

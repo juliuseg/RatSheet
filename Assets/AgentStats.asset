@@ -21,3 +21,4 @@ MonoBehaviour:
   alignmentWeight: 5.52
   boidStrength: 0.381
   velocityInterpolation: 0.552
+  attackRange: 1

@@ -109,7 +109,7 @@ public class FlowFieldManager
     private IntegrationField integrationField;
     private FlowField flowField;
 
-    public FlowFieldManager(int _rows, int _cols, float _cellSize, LayerMask _terrainLayer, Vector3 _targetPoint) // Potentionaly add weight grid so we don't have to recalculate it every time
+    public FlowFieldManager(int _rows, int _cols, float _cellSize, LayerMask _terrainLayer) // Potentionaly add weight grid so we don't have to recalculate it every time
     {
         rows = _rows;
         cols = _cols;

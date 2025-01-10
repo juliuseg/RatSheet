@@ -3,12 +3,23 @@ using UnityEngine;
 public class AgentAppearance{
     private GameObject selectionCircle;
     private SpriteRenderer spriteRenderer;
+
+    private int team;
+
+    private debugMode debug = debugMode.attack;
+
+    private enum debugMode {
+        none,
+        arrived,
+        attack,
+    }
     
 
-    public AgentAppearance(GameObject _selectionCircle, SpriteRenderer _spriteRenderer)
+    public AgentAppearance(GameObject _selectionCircle, SpriteRenderer _spriteRenderer, int _team)
     {
         selectionCircle = _selectionCircle;
         spriteRenderer = _spriteRenderer;
+        team = _team;
     }
 
     public void SetSelectionCircleActive(int mode) // mode 0 = off, mode 1 = highlighted in red, mode 2 = selected in green
@@ -30,10 +41,39 @@ public class AgentAppearance{
     }
 
 
-    public void AdjustAgentAppearance(bool arrived, bool arrivedCorrection, MovementManager movementManager, int neighborCount)
+    public void AdjustAgentAppearance(bool arrived, bool arrivedCorrection, AttackState attackState, MovementManager movementManager, int neighborCount)
     {
-        spriteRenderer.color = arrived ? Color.green : Color.white;
-        if (arrivedCorrection) spriteRenderer.color = Color.red;
-        if (neighborCount == 0 && movementManager.GetAgentCount() != 1) spriteRenderer.color = Color.yellow;
+        if (debug == debugMode.arrived){
+            spriteRenderer.color = arrived ? Color.green : Color.white;
+            if (arrivedCorrection) spriteRenderer.color = Color.red;
+            if (neighborCount == 0 && movementManager.GetAgentCount() != 1) spriteRenderer.color = Color.yellow;
+        } else if (debug == debugMode.attack){
+            switch (attackState)
+            {
+                case AttackState.idle:
+                    spriteRenderer.color = GetColorFromTeam(team);
+                    break;
+                case AttackState.moving:
+                    spriteRenderer.color = GetColorFromTeam(team);
+                    break;
+                case AttackState.movingToAttack:
+                    spriteRenderer.color = Color.magenta;
+                    break;
+                case AttackState.attacking:
+                    spriteRenderer.color = Color.red;
+                    break;
+            }
+        } else if (debug == debugMode.none){ 
+            spriteRenderer.color = GetColorFromTeam(team);
+        }
     }
+
+    private Color GetColorFromTeam(int team){
+        if (team == 0) return Color.yellow;
+        else if (team == 1) return Color.cyan;
+        else return Color.white;
+    }
+    
 }
+
+public enum AttackState {idle, moving, movingToAttack, attacking};

@@ -39,4 +39,36 @@ public static class AgentUtils
         }).ToList();
     }
 
+    public static AgentControllerBoid GetClosestNeigborOnOtherTeam(List<AgentControllerBoid> neighbors, Vector3 targetPoint, int team){
+        string p = "im on team: " + team;
+        foreach (AgentControllerBoid neighbor in neighbors)
+        {
+            p += " neighbor team: " + neighbor.team+ "\n";
+        }
+        Debug.Log(p);
+        return neighbors
+        .Where(neighbor => neighbor.team != team)
+        .OrderBy(neighbor => Vector2.Distance(neighbor.transform.position, targetPoint))
+        .FirstOrDefault();
+    }
+
+    public static bool CanSeeOther(AgentControllerBoid agent, AgentControllerBoid other){
+        int obstacleLayer = LayerMask.GetMask("PathfindingWeights");
+        Vector2 direction = other.transform.position - agent.transform.position;
+        float distance = direction.magnitude;
+        RaycastHit2D[] hits = Physics2D.RaycastAll(agent.transform.position, direction, distance, obstacleLayer);
+
+        //Debug.Log($"hits: {hits.Length}, pos: " + agent.transform.position + " direction: " + direction + " distance: " + distance);
+        foreach (RaycastHit2D hit in hits)
+        {
+            //Debug.Log($"hit: {hit.collider.gameObject.name}");
+            if (hit.collider != null && hit.collider.gameObject.tag == "Rock")
+            {
+                return false; // Obstacle in the way
+            }
+        }
+
+        return true; // No obstacles
+    }
+
 }

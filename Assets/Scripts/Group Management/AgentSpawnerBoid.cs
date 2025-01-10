@@ -28,31 +28,37 @@ public class AgentSpawnerBoid : MonoBehaviour
             agents.Add(SpawnAgent());
         }
 
-        MovementManager mm = GetSpawningMovementManager(agents);
+        MovementManager mm0 = GetSpawningMovementManager(agents, new Vector3(-0.5f,0,0));
+        MovementManager mm1 = GetSpawningMovementManager(agents, new Vector3(3,0,0));
 
+        print("movement mannagers: " + mm0 + " " + mm1);
+
+        // Check these two? are they handled the right way?
+
+        int t = 0;
         foreach (AgentControllerBoid pf in agents){
-            pf.GetComponent<AgentControllerBoid>().SetMovementManager(mm);
-        }
-    }
+            int team = t>1?Random.Range(0, 2):t;
+            t ++;
 
-    // Update is called once per frame
-    void Update()
-    {
-        // Spawn on space key press
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
+            pf.SetAgent(team);
 
-            SpawnAgent();
+            if (team == 0) {
+                pf.SetMovementManager(mm0);
+                pf.transform.position += new Vector3(-0.5f, 0, 0);
+            } else {
+                pf.SetMovementManager(mm1);
+                pf.transform.position += new Vector3(3, 0, 0);
+            }
+
             
-        }
-
         
+        }
     }
 
-    MovementManager GetSpawningMovementManager(List<AgentControllerBoid> agents){
-        FlowFieldManager flowFieldManager = new FlowFieldManager(40, 40, 0.5f, terrainLayer, targetPoint.position);
-        flowFieldManager.CreateGridFromMousePos(targetPoint.position);
-        MovementManager movementManager = new MovementManager(flowFieldManager, agents);
+    MovementManager GetSpawningMovementManager(List<AgentControllerBoid> agents, Vector3 targetOffset){
+        FlowFieldManager flowFieldManager = new FlowFieldManager(40, 40, 0.5f, terrainLayer);
+        flowFieldManager.CreateGridFromMousePos(targetPoint.position+ targetOffset);
+        MovementManager movementManager = new BasicMovementManager(flowFieldManager, agents);
 
         return movementManager;
     }
@@ -60,7 +66,7 @@ public class AgentSpawnerBoid : MonoBehaviour
     AgentControllerBoid SpawnAgent()
     {
         GameObject pf = Instantiate(agentPrefab, transform.position, Quaternion.identity);
-        pf.name = "Agent"+"_"+Random.Range(0, 1000);
+        pf.name = "Agent"+"_"+Random.Range(1000, 10000);
         return pf.GetComponent<AgentControllerBoid>();
         
     }

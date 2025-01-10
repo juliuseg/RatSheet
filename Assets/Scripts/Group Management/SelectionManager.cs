@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 
 public class SelectionManager : MonoBehaviour
@@ -18,16 +19,21 @@ public class SelectionManager : MonoBehaviour
     public LayerMask terrainLayer; 
     public Transform targetPoint;
 
-    bool mouseDown;
+    private bool mouseDown;
 
     public GridRenderer gridRenderer;
 
     private int selecterMode = 0;
-    int UILayer;
+    private int UILayer;
 
     [SerializeField] private GameObject UI;
 
-    Vector2 mouseStart;
+    private Vector2 mouseStart;
+
+    private int team = -1;
+
+    public Image[] UIButtons;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,20 +52,39 @@ public class SelectionManager : MonoBehaviour
 
         // Move selected agents
         ActionSelectedAgents();
+
+        // Check for input for UI
+        CheckUIInput();
         
+    }
+
+    void CheckUIInput(){
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            SetSelecterMode(1);
+        }
     }
 
     void HandleUI(){
         if (selectedAgents.Count > 0){
             UI.SetActive(true);
+
+            // Change UI button colors based on selecterMode
+            UIButtons[0].color = selecterMode == 1 ? Color.green : Color.white;
+
         } else {
             selecterMode = 0;
             UI.SetActive(false);
+
+            
         }
+
+        
     }
 
     public void SetSelecterMode(int mode){
-        if (mode == selecterMode) selecterMode = 0;
+        if (mode == selecterMode) 
+        selecterMode = 0;
         else
         selecterMode = mode;
 
@@ -96,22 +121,20 @@ public class SelectionManager : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && selectedAgents.Count > 0 && !IsPointerOverUIElement())
         {
             if (selecterMode == 0){
-                MoveSelectedAgents();
+                MoveSelectedAgents(false);
 
             } else if (selecterMode == 1){
                 print("Attack");
-                MoveSelectedAgents();
-                // Move to the target of the attack. Either a unit/building or a point on the map.
-                // If a point on the map, move to that point and attack any units in its path.
-                // If a unit/building, move to that: In pathfinding add all the tiles the building occupies as start.
-
+                MoveSelectedAgents(true);
+                SetSelecterMode(0);
+                
             }
         }
         
     }
 
-    void MoveSelectedAgents(){
-        FlowFieldManager flowFieldManager = new FlowFieldManager(40, 40, 0.5f, terrainLayer, targetPoint.position);
+    void MoveSelectedAgents(bool AttackMove){
+        FlowFieldManager flowFieldManager = new FlowFieldManager(40, 40, 0.5f, terrainLayer);
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (!flowFieldManager.CreateGridFromMousePos(mousePos)) return;
@@ -120,8 +143,15 @@ public class SelectionManager : MonoBehaviour
 
         targetPoint.position = new Vector3(mousePos.x, mousePos.y, 0);
 
+        MovementManager movementManager;
+        if (AttackMove){
+            movementManager = new AttackMovementManager(flowFieldManager, selectedAgents.ToList());
 
-        MovementManager movementManager = new MovementManager(flowFieldManager, selectedAgents.ToList());
+        } else {
+            movementManager = new BasicMovementManager(flowFieldManager, selectedAgents.ToList());
+
+        }
+
 
         foreach (AgentControllerBoid agent in selectedAgents)
         {
@@ -129,9 +159,12 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
+
     void SelectionBoxLogic(){
+        
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUIElement())
         {
+            team = Input.GetKey(KeyCode.RightAlt)? 1 : 0;
             mouseStart = Input.mousePosition;
             mouseDown = true;
         }
@@ -143,7 +176,8 @@ public class SelectionManager : MonoBehaviour
             // Deselect all agents
             foreach (AgentControllerBoid agent in selectedAgents)
             {
-                agent.SetSelectionCircleActive(0);
+                if (agent != null)
+                    agent.SetSelectionCircleActive(0);
             }
             selectedAgents.Clear();
 
@@ -151,12 +185,12 @@ public class SelectionManager : MonoBehaviour
             if (selectionBox.gameObject.activeSelf) {
                 selectionBox.gameObject.SetActive(false);
 
-                
-                
                 foreach (AgentControllerBoid agent in highlightedAgents)
                 {
-                    agent.SetSelectionCircleActive(2);
-                    selectedAgents.Add(agent);
+                    if (agent != null){
+                        agent.SetSelectionCircleActive(2);
+                        selectedAgents.Add(agent);
+                    }
                 }
 
             } else {
@@ -164,8 +198,10 @@ public class SelectionManager : MonoBehaviour
                 print("Selecting single agent: " + selectedAgents.Count);
                 if (selectedAgents.Count > 0)
                 {
-                    selectedAgents = new List<AgentControllerBoid> { selectedAgents[0] };
-                    selectedAgents[0].SetSelectionCircleActive(2);
+                    if (selectedAgents[0] != null){
+                        selectedAgents = new List<AgentControllerBoid> { selectedAgents[0] };
+                        selectedAgents[0].SetSelectionCircleActive(2);
+                    }
 
                 }
                 
@@ -196,20 +232,25 @@ public class SelectionManager : MonoBehaviour
 
             foreach (AgentControllerBoid agent in removeFromList)
             {
-                // Deselect this unit
-                agent.SetSelectionCircleActive(0);
+                if (agent != null){
+                    // Deselect this unit
+                    agent.SetSelectionCircleActive(0);
 
-                // Remove from selected list
-                highlightedAgents.Remove(agent);
+                    // Remove from selected list
+                    highlightedAgents.Remove(agent);
+                }
             }
 
             foreach (AgentControllerBoid agent in addToList)
             {
-                // Select this unit
-                agent.SetSelectionCircleActive(1);
+                
+                if (agent.team == team) {
+                    // Select this unit
+                    agent.SetSelectionCircleActive(1);
 
-                // Add to selected list
-                highlightedAgents.Add(agent);
+                    // Add to selected list
+                    highlightedAgents.Add(agent);
+                }
             }
         }
     }

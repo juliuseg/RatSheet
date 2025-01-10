@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class MovementManager
+public abstract class MovementManager
 {
     public FlowFieldManager flowFieldManager; 
-
+    public abstract MovementManagerType ManagerType { get; }
 
     public List<AgentControllerBoid> agents;
 
@@ -18,7 +18,7 @@ public class MovementManager
         flowFieldManager = _flowFieldManager;
         agents = _agents;
         id = _id==0?Random.Range(0, 2000000):_id;
-        Debug.Log("MovementManager created with id: " + id);
+        //Debug.Log("MovementManager created with id: " + id);
 
     }
 
@@ -38,4 +38,12 @@ public class MovementManager
         agents.Remove(agent);
     }
 
+}
+
+public enum MovementManagerType
+{
+    Basic,
+    Attack,
+    DirrectAttack,
+    Collect
 }
