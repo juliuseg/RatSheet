@@ -203,7 +203,7 @@ public class SelectionManager : MonoBehaviour
                         selectedAgents[0].agentAppearance.SetSelectionCircleActive(2);
                     }
 
-                }
+                } 
                 
             }
             
@@ -278,7 +278,8 @@ public class SelectionManager : MonoBehaviour
         
     }
 
-    public static bool IsPointWithinBounds(Vector2 point, Vector2 bound1, Vector2 bound2, float padding = 0)
+
+    private static bool IsPointWithinBounds(Vector2 point, Vector2 bound1, Vector2 bound2, float padding = 0)
     {
         // Calculate min and max bounds
         float minX = Mathf.Min(bound1.x, bound2.x) - padding;
