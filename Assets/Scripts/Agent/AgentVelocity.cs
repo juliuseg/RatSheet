@@ -63,6 +63,6 @@ public class AgentVelocity
 
     public bool IsInAttackRange (AgentControllerBoid enemy){
         Vector2 direction = enemy.transform.position - transform.position;
-        return direction.magnitude < agentStats.attackRange;
+        return direction.magnitude < agentStats.attack.attackRange;
     }
 }

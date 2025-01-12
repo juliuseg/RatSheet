@@ -41,7 +41,6 @@ public class AgentHPController : MonoBehaviour {
     }
 
     private void UpdateHealthBar(){
-        print (GetHPPerc());
         healthBar.localScale = new Vector3(GetHPPerc(), 1, 1);
     }
 

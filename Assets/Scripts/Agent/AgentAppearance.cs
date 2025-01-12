@@ -59,7 +59,7 @@ public class AgentAppearance{
                 case AttackState.movingToAttack:
                     spriteRenderer.color = Color.magenta;
                     break;
-                case AttackState.attacking:
+                case AttackState.reloading:
                     spriteRenderer.color = Color.red;
                     break;
             }
@@ -76,4 +76,3 @@ public class AgentAppearance{
     
 }
 
-public enum AttackState {idle, moving, movingToAttack, attacking};

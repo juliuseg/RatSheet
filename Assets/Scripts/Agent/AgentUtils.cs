@@ -45,18 +45,18 @@ public static class AgentUtils
         {
             p += " neighbor team: " + neighbor.team+ "\n";
         }
-        Debug.Log(p);
+        //Debug.Log(p);
         return neighbors
         .Where(neighbor => neighbor.team != team)
         .OrderBy(neighbor => Vector2.Distance(neighbor.transform.position, targetPoint))
         .FirstOrDefault();
     }
 
-    public static bool CanSeeOther(AgentControllerBoid agent, AgentControllerBoid other){
+    public static bool CanSeeOther(Vector2 agent, Vector2 other){
         int obstacleLayer = LayerMask.GetMask("PathfindingWeights");
-        Vector2 direction = other.transform.position - agent.transform.position;
+        Vector2 direction = other - agent;
         float distance = direction.magnitude;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(agent.transform.position, direction, distance, obstacleLayer);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(agent, direction, distance, obstacleLayer);
 
         //Debug.Log($"hits: {hits.Length}, pos: " + agent.transform.position + " direction: " + direction + " distance: " + distance);
         foreach (RaycastHit2D hit in hits)

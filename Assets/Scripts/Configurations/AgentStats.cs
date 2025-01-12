@@ -21,12 +21,11 @@ public class AgentStats : ScriptableObject
 
     [Range(0f, 1f)] public float velocityInterpolation = 0.1f;
 
-    [Header("Attack")]
-    [Range(0f, 10f)] public float attackRange = 1.5f;
-
-    [Header("Attack")]
+    [Header("Health")]
     [Range(0f, 10f)] public float maxHealth = 5f;
-    [Range(0f, 10f)] public float dps = 1.0f;
+    [Range(0f, 2f)] public float defense = 1.5f;
+
+    public AttackConfig attack;
 
 
 

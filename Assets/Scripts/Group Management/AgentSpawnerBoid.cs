@@ -31,13 +31,13 @@ public class AgentSpawnerBoid : MonoBehaviour
         MovementManager mm0 = GetSpawningMovementManager(agents, new Vector3(-0.5f,0,0));
         MovementManager mm1 = GetSpawningMovementManager(agents, new Vector3(3,0,0));
 
-        print("movement mannagers: " + mm0 + " " + mm1);
+        //print("movement mannagers: " + mm0 + " " + mm1);
 
         // Check these two? are they handled the right way?
 
         int t = 0;
         foreach (AgentControllerBoid pf in agents){
-            int team = t>1?Random.Range(0, 2):t;
+            int team = t % 2;
             t ++;
 
             pf.SetAgent(team);

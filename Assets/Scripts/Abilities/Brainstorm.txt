@@ -1,0 +1,25 @@
+What should effect be able to do early on
+Affect different ways:
+- Effect single target
+- Effect multiple targets, If multiple you can make a circle UI overlay to see selected affected units
+- Effect it self
+
+
+- Change values of effected units: health, speed, defence
+
+- An effect should be able to deal more damage to certain type of units
+
+
+What should the Constitution class entail:
+- Health
+- Speed
+- Defence (when taking damage, a defence modifyer is applied)
+- 
+
+Unit types: (One unit can have mulitple: Like flying and light)
+- (has to be relevant in terms of which effect can hit it. ranged/melee doesnt make sense then...)
+- Light (Small units)
+- Armored (Units with lots of defence)
+- Magic (Typically units that have mulitple abbilites and can have many roles)
+- Flying
+- Ground

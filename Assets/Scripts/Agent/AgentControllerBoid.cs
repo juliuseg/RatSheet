@@ -14,7 +14,7 @@ public class AgentControllerBoid : MonoBehaviour
     private List<AgentControllerBoid> neighbors = new List<AgentControllerBoid>(); // List of nearby agents
     public ArrivedHandler arrivedHandler;
 
-    private AgentAppearance agentAppearance;
+    public AgentAppearance agentAppearance{ get; private set;}
     private AgentVelocity agentVelocity;
 
     [SerializeField] private GameObject selectionCircle;
@@ -23,6 +23,9 @@ public class AgentControllerBoid : MonoBehaviour
 
 
     public AgentHPController health;
+
+    private AgentAttackController attackController;
+    private AgentMovementController movementController;
 
     public void SetAgent(int  _team)
     {
@@ -38,6 +41,12 @@ public class AgentControllerBoid : MonoBehaviour
         health = GetComponent<AgentHPController>();
         health.SetHealthInit(agentStats);
         health.OnDeath += AgentDead;
+
+        attackController = gameObject.AddComponent<AgentAttackController>();
+        attackController.Setup(transform, agentVelocity, agentStats);
+        movementController = new AgentMovementController(this, agentVelocity);
+
+        neighbors = gameObject.AddComponent<AgentNeighborCollisionHandler>().GetNeighbors();
 
     }
 
@@ -79,94 +88,44 @@ public class AgentControllerBoid : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         if (movementManager.flowFieldManager == null || agentStats == null) return;
 
+        if (rb.isKinematic) rb.isKinematic = false;
+
+        // Handle Attack
+        AttackState attackState = attackController.HandleAttack(neighbors, team);
+
+        // Handle Movement if not actively attacking
+        if (attackState == AttackState.idle || attackState == AttackState.moving)
+        {
+            attackState = movementController.HandleMovement(arrivedHandler, movementManager, ref attackState);
+        }
 
         
-        // Attack
-        AttackState attackState = AttackState.idle;
-
-        Vector2 enemyVelocity = Vector2.zero;
-        AgentControllerBoid other = null;
-
-        if (rb.isKinematic) rb.isKinematic = false;
-        if (movementManager.GetType() == typeof(AttackMovementManager)
-        || (movementManager.GetType() == typeof(BasicMovementManager) && arrivedHandler.GetInitialArrived()))
-        {
-            other = AgentUtils.GetClosestNeigborOnOtherTeam(neighbors, transform.position, team);
-            if (other != null){
-                print ("other: " + other);
-                bool canSee = AgentUtils.CanSeeOther(this, other);
-                if (canSee){
-                    enemyVelocity = agentVelocity.GetVelocityFromEnemy(other);
-                    print ("enemyVelocity: " + enemyVelocity);
-                }
-            }
-        }
-
-        if (enemyVelocity != Vector2.zero){
-            if (other != null){
-                if  (!agentVelocity.IsInAttackRange(other)){
-                    agentVelocity.SetVelocity(enemyVelocity);
-                    attackState = AttackState.movingToAttack;
-                } else {
-                    agentVelocity.SetVelocity(Vector2.zero);
-                    attackState = AttackState.attacking;
-                    rb.isKinematic = true;
-                    other.health.TakeDamage(agentStats.dps*Time.deltaTime);
-
-                }
-            }
-        } else {
-            // Movement
-            bool checkN = arrivedHandler.UpdateArrivalStatus();
-
-            Vector2 flowFieldVelocity = agentVelocity.GetVelocityFromFlowField(arrivedHandler.GetArrived(), arrivedHandler.GetArrivedCorrection());
-            
-            if (checkN) arrivedHandler.CheckNeighborsArrival();
-            
-            if (flowFieldVelocity != Vector2.zero){
-                agentVelocity.SetVelocity(flowFieldVelocity);
-                attackState = AttackState.moving;
-            } else {
-                agentVelocity.SetVelocity(Vector2.zero);
-                attackState = AttackState.idle;
-            }
-        }
-
-
-        // Appearance
-        agentAppearance.AdjustAgentAppearance(arrivedHandler.GetArrived(), arrivedHandler.GetArrivedCorrection(), attackState, movementManager, AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Count);
-
-
+        // Adjust Appearance
+        print(attackState);
+        HandleAppearance(attackState);
     }
 
-    public void SetSelectionCircleActive(int mode) // mode 0 = off, mode 1 = highlighted in red, mode 2 = selected in green
+
+    private void HandleAppearance(AttackState attackState)
     {
-        agentAppearance.SetSelectionCircleActive(mode);
+        agentAppearance.AdjustAgentAppearance(
+            arrivedHandler.GetArrived(),
+            arrivedHandler.GetArrivedCorrection(),
+            attackState,
+            movementManager,
+            AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Count
+        );
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // Add neighbor if it's another AgentController and not this agent
-        if (other.TryGetComponent(out AgentControllerBoid neighbor) && neighbor != this && !neighbors.Contains(neighbor))
-        {
-            print ("neighbor added: " + other.gameObject.name + " to " + gameObject.name);
-            neighbors.Add(neighbor);
-            neighbor.health.OnDeath += () => neighbors.Remove(neighbor);
-            
-        }
-    }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        // Remove the agent from neighbors when exiting the detection radius
-        if (other.TryGetComponent(out AgentControllerBoid neighbor)  && other.isTrigger)
-        {
-            neighbors.Remove(neighbor);
-            neighbor.health.OnDeath -= () => neighbors.Remove(neighbor);
-            //print ("neighbor removed: " + other.gameObject.GetInstanceID() + " from " + gameObject.GetInstanceID());
-        }
-    }
+    
 }
+
+
+public enum AttackState {idle, moving, movingToAttack, reloading}; // Attack is instant, so no need for attacking state
+
+

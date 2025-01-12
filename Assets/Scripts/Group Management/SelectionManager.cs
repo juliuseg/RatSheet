@@ -177,7 +177,7 @@ public class SelectionManager : MonoBehaviour
             foreach (AgentControllerBoid agent in selectedAgents)
             {
                 if (agent != null)
-                    agent.SetSelectionCircleActive(0);
+                    agent.agentAppearance.SetSelectionCircleActive(0);
             }
             selectedAgents.Clear();
 
@@ -188,7 +188,7 @@ public class SelectionManager : MonoBehaviour
                 foreach (AgentControllerBoid agent in highlightedAgents)
                 {
                     if (agent != null){
-                        agent.SetSelectionCircleActive(2);
+                        agent.agentAppearance.SetSelectionCircleActive(2);
                         selectedAgents.Add(agent);
                     }
                 }
@@ -200,7 +200,7 @@ public class SelectionManager : MonoBehaviour
                 {
                     if (selectedAgents[0] != null){
                         selectedAgents = new List<AgentControllerBoid> { selectedAgents[0] };
-                        selectedAgents[0].SetSelectionCircleActive(2);
+                        selectedAgents[0].agentAppearance.SetSelectionCircleActive(2);
                     }
 
                 }
@@ -234,7 +234,7 @@ public class SelectionManager : MonoBehaviour
             {
                 if (agent != null){
                     // Deselect this unit
-                    agent.SetSelectionCircleActive(0);
+                    agent.agentAppearance.SetSelectionCircleActive(0);
 
                     // Remove from selected list
                     highlightedAgents.Remove(agent);
@@ -246,7 +246,7 @@ public class SelectionManager : MonoBehaviour
                 
                 if (agent.team == team) {
                     // Select this unit
-                    agent.SetSelectionCircleActive(1);
+                    agent.agentAppearance.SetSelectionCircleActive(1);
 
                     // Add to selected list
                     highlightedAgents.Add(agent);

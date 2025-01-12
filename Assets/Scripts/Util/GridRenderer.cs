@@ -13,9 +13,10 @@ public class GridRenderer : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        //print("Drawing gizmos");
         if (!Application.isPlaying)
         {
-            if (flowFieldManager == null) return;
+            if (flowFieldManager == null) { return; }
 
             int rows = flowFieldManager.rows;
             int cols = flowFieldManager.cols;
@@ -40,7 +41,7 @@ public class GridRenderer : MonoBehaviour
             return; // Exit to prevent further rendering
         }
         if (flowFieldManager == null) { 
-            //print("flowfield is none!"); 
+            print("Grid renderer doesnt have flowfield");
             return;
         }
 
@@ -48,10 +49,12 @@ public class GridRenderer : MonoBehaviour
         var integrationField = flowFieldManager.GetIntegrationField(); 
         var vectorField = flowFieldManager.GetFlowField(); 
 
+        print("Drawing grid");
         for (int x = 0; x < weightField.Rows; x++)
         {
             for (int y = 0; y < weightField.Cols; y++)
             {
+                
                 Vector3 worldPos = weightField.GetWorldPosition(x, y);
                 Vector3 cellCenter = worldPos;
                 

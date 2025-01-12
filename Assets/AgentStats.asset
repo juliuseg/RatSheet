@@ -21,4 +21,6 @@ MonoBehaviour:
   alignmentWeight: 5.52
   boidStrength: 0.381
   velocityInterpolation: 0.552
-  attackRange: 1
+  attack: {fileID: 11400000, guid: 6cbf587f42a9e4aba822fccc4925258f, type: 2}
+  maxHealth: 5
+  defense: 1.5
