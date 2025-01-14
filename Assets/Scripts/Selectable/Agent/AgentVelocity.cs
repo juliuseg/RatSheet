@@ -48,7 +48,7 @@ public class AgentVelocity
         return velocity;
     }
 
-    public void SetVelocity(Vector2 targetVelocity){
+    public Vector2 SetVelocity(Vector2 targetVelocity){
         //Debug.Log("SetVelocity: " + targetVelocity);
         // Interpolate between the current velocity and the new calculated velocity
         targetVelocity = targetVelocity.normalized * agentStats.maxSpeed;
@@ -56,6 +56,7 @@ public class AgentVelocity
         transform.position += (Vector3)velocity * Time.fixedDeltaTime*0.2f;
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y*0.001f);
         rb.velocity = velocity;
+        return targetVelocity;
     }
 
     public Vector2 GetVelocityToEnemy(Selectable enemy){

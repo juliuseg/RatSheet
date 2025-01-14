@@ -23,6 +23,8 @@ public class AgentControllerBoid : Selectable
 
     [SerializeField] private SpriteRenderer spriteRenderer;
 
+    private AgentAnimation agentAnimation;
+
     public override Abilities GetAbilities(){
         return agentAbilities;
     }
@@ -39,11 +41,14 @@ public class AgentControllerBoid : Selectable
         
 
         attackController = gameObject.AddComponent<AgentAttackController>();
-        attackController.Setup(transform, agentVelocity, agentStats);
+        attackController.Setup(transform, agentVelocity, agentStats, rb);
         movementController = new AgentMovementController(this, agentVelocity);
 
         agentAbilities = new AgentAbilities();
         agentAbilities.SetAbilities(agentStats.abilities);
+
+        agentAnimation = GetComponent<AgentAnimation>();
+
     }
 
     public override void SetSelectionCircleActive(int active)
@@ -91,31 +96,33 @@ public class AgentControllerBoid : Selectable
     private void FixedUpdate()
     {
         //print("FixedUpdate");
-        if (movementManager.flowFieldManager == null || agentStats == null) {
-            //print("flowFieldManager is " + (movementManager.flowFieldManager==null) + " and agentStats is " + (agentStats==null));
+        if (movementManager != null && movementManager.flowFieldManager == null || agentStats == null) {
+            print("MovementManager is " + movementManager != null + "flowFieldManager is " + (movementManager.flowFieldManager==null) + " and agentStats is " + (agentStats==null));
             return;
         }
 
         if (rb.isKinematic) rb.isKinematic = false;
 
         AttackState attackState = AttackState.idle;
-
+        Vector2 velocity = Vector2.zero;
 
         // Handle Attack only if attackmovement manager. 
         if (movementManager.GetType() == typeof(AttackMovementManager) || arrivedHandler.GetInitialArrived()){
-            attackState = attackController.HandleAttack(neighbors, team);
+            attackState = attackController.HandleAttack(neighbors, team, out velocity);
         }
         // Handle Movement if not actively attacking
         if (attackState == AttackState.idle)
         {
-            attackState = movementController.HandleMovement(arrivedHandler, movementManager, ref attackState);
+            attackState = movementController.HandleMovement(arrivedHandler, movementManager, ref attackState, out velocity);
         }
 
 
         
         // Adjust Appearance
-        print("Attack state: " + attackState);
+        //print("Attack state: " + attackState);
         HandleAppearance(attackState);
+
+        agentAnimation.SetState(attackState, velocity, spriteRenderer);
     }
 
 

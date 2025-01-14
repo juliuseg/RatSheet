@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac8535b6a26148b9b593fc9893b37ff, type: 3}
   m_Name: AgentStats
   m_EditorClassIdentifier: 
+  maxHealth: 5
+  defense: 1.5
   maxSpeed: 2.5
   maxForce: 2
-  neighborRadius: 4.25
-  separationDistance: 7.69
+  neighborRadius: 1.25
+  separationDistance: 2.42
   separationWeight: 9.78
   cohesionWeight: 5.37
   alignmentWeight: 5.52
   boidStrength: 0.381
   velocityInterpolation: 0.552
-  maxHealth: 5
-  defense: 1.5
   attack: {fileID: 11400000, guid: 6cbf587f42a9e4aba822fccc4925258f, type: 2}
   abilities:
   - Attack

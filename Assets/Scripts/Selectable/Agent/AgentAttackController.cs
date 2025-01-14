@@ -12,27 +12,38 @@ public class AgentAttackController : MonoBehaviour
 
     private bool attacking;
 
+    private bool justAttacked;
+
     private Coroutine reloadCoroutine;
 
+    private Rigidbody2D rb;
 
 
-    public void Setup(Transform _agentTransform, AgentVelocity _agentVelocity, AgentStats _agentStats)
+
+    public void Setup(Transform _agentTransform, AgentVelocity _agentVelocity, AgentStats _agentStats, Rigidbody2D _rb)
     {
         agentTransform = _agentTransform;
         agentVelocity = _agentVelocity;
         agentStats = _agentStats;
+        rb = _rb;
 
 
         attacking = false;
     }
 
-    public AttackState HandleAttack(List<Selectable> neighbors, int team)
+    public AttackState HandleAttack(List<Selectable> neighbors, int team, out Vector2 targetVelocity)
     {
+        targetVelocity = Vector2.zero;
 
         // Check if attacking 
         if (attacking) {
-            agentVelocity.SetVelocity(Vector2.zero);
-            return AttackState.attacking;
+            targetVelocity = agentVelocity.SetVelocity(Vector2.zero);
+            rb.isKinematic = true;
+            if (justAttacked){
+                justAttacked = false;
+                return AttackState.attacking;
+            }
+            return AttackState.reloading;
         }
         
         // Default to idle state
@@ -40,7 +51,7 @@ public class AgentAttackController : MonoBehaviour
 
         // Get the target if there is one
         Selectable target = GetTarget(neighbors, team);
-        print("target: " + target);
+        //print("target: " + target);
 
         // Check if the target is in sight
         if (target != null && AgentUtils.CanSeeOther(agentTransform, target.transform))
@@ -50,21 +61,21 @@ public class AgentAttackController : MonoBehaviour
 
             if (!agentVelocity.IsInAttackRange(target))
             {
-                print("not in attack range");
+                //print("not in attack range");
                 // If we are not in attack range then move to attack
-                agentVelocity.SetVelocity(velocityToEnemy);
+                targetVelocity = agentVelocity.SetVelocity(velocityToEnemy);
                 attackState = AttackState.movingToAttack;
             }
             else
             {
-                print("Should attack here?");
+                //print("Should attack here?");
                 // Otherwise make the attack if we are not reloading
                 if (reloadCoroutine == null)
                 {
                     reloadCoroutine = StartCoroutine(AttackCooldown(target));
                     attackState = AttackState.attacking;
                 } else {
-                    agentVelocity.SetVelocity(Vector2.zero);
+                    targetVelocity = agentVelocity.SetVelocity(Vector2.zero);
                     attackState = AttackState.reloading;
                     // Although we are reloading, we can still move.
                     // But if we are in range, there is nothing to do. 
@@ -84,12 +95,19 @@ public class AgentAttackController : MonoBehaviour
 
 
     private IEnumerator AttackCooldown(Selectable target) {
-        Attack(target, new Attack(agentStats.attack));
         attacking = true;
-        yield return new WaitForSeconds(agentStats.attack.attackLenght);
+        justAttacked = true; 
+        yield return new WaitForSeconds(agentStats.attack.attackLenght/2);
+
+        if (target != null && agentVelocity.IsInAttackRange(target)){
+            Attack(target, new Attack(agentStats.attack));
+        }
+        yield return new WaitForSeconds(agentStats.attack.attackLenght/2);
         attacking = false;
-        yield return new WaitForSeconds(agentStats.attack.attackCD- agentStats.attack.attackLenght);
+        yield return new WaitForSeconds(agentStats.attack.attackCD - agentStats.attack.attackLenght);
         reloadCoroutine = null;
+
+
 
     }
 

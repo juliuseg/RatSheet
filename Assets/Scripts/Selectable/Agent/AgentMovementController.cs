@@ -10,8 +10,9 @@ public class AgentMovementController
         this.agentVelocity = agentVelocity;
     }
 
-    public AttackState HandleMovement(ArrivedHandler arrivedHandler, MovementManager movementManager, ref AttackState attackState)
+    public AttackState HandleMovement(ArrivedHandler arrivedHandler, MovementManager movementManager, ref AttackState attackState, out Vector2 velocity)
     {
+        velocity = Vector2.zero;
         bool hasArrived = arrivedHandler.UpdateArrivalStatus();
         if (hasArrived) arrivedHandler.CheckNeighborsArrival();
 
@@ -22,12 +23,12 @@ public class AgentMovementController
 
         if (flowFieldVelocity != Vector2.zero)
         {
-            agentVelocity.SetVelocity(flowFieldVelocity);
+            velocity = agentVelocity.SetVelocity(flowFieldVelocity);
             return AttackState.moving;
         }
         else
         {
-            agentVelocity.SetVelocity(Vector2.zero);
+            velocity = agentVelocity.SetVelocity(Vector2.zero);
             return AttackState.idle;
         }
     }

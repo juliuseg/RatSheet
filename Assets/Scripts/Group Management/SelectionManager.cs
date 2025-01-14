@@ -81,7 +81,7 @@ public class SelectionManager : MonoBehaviour
                     uiFacade.UIButtons[i].gameObject.SetActive(false);
                     continue;
                 } else {
-                    print("settingActive: " + i);
+                    //print("settingActive: " + i);
                     uiFacade.UIButtons[i].gameObject.SetActive(true);
                 }
                 uiFacade.UIButtons[i].tmpText.text = abilities.abilityNames[i];

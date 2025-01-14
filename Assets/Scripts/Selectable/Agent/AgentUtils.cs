@@ -54,10 +54,10 @@ public static class AgentUtils
     public static Selectable GetClosestNeigborOnOtherTeamProritizeUnits(List<Selectable> neighbors, Vector3 targetPoint, int team){
         List<Selectable> ns = neighbors.Where(neighbor => neighbor is AgentControllerBoid && neighbor.team != team).Cast<Selectable>().ToList();
         if (ns.Count() == 0){
-            Debug.Log("no units so should return building");
+            //Debug.Log("no units so should return building");
             return GetClosestNeigborOnOtherTeam(neighbors, targetPoint, team);
         } else {
-            Debug.Log("should get some other team unit");
+            //Debug.Log("should get some other team unit");
             return GetClosestNeigborOnOtherTeam(ns, targetPoint, team);
         }
     }
