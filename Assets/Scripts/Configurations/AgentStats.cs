@@ -1,7 +1,9 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AgentStats", menuName = "ScriptableObjects/AgentStats", order = 1)]
-public class AgentStats : ScriptableObject
+public class AgentStats : SelectableStats
 {
     [Header("Movement")]
     [Range(0f, 20f)] public float maxSpeed = 5f;
@@ -21,11 +23,12 @@ public class AgentStats : ScriptableObject
 
     [Range(0f, 1f)] public float velocityInterpolation = 0.1f;
 
-    [Header("Health")]
-    [Range(0f, 10f)] public float maxHealth = 5f;
-    [Range(0f, 2f)] public float defense = 1.5f;
-
     public AttackConfig attack;
+
+
+    [Header("Abilities")]
+    public List<string> abilities;
+
 
 
 

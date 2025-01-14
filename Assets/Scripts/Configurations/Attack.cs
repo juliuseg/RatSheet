@@ -9,6 +9,7 @@ public class AttackConfig : ScriptableObject{
 
     [Range(0f, 10f)] public float attackDamage = 1.0f;
     [Range(0f, 2f)] public float attackCD = 1.0f;
+    [Range(0f, 2f)] public float attackLenght = 0.2f;
 }
 
 public class Attack

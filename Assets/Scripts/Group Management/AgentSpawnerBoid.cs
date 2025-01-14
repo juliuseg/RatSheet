@@ -7,15 +7,12 @@ public class AgentSpawnerBoid : MonoBehaviour
 {
     public GameObject agentPrefab;
 
-    //public int agentsArrived;
-
-    //public List<AgentControllerBoid> agents;
-
 
     public LayerMask terrainLayer; 
-    public Transform targetPoint;
 
     public int agentCount;
+
+    public int team;
 
 
     void Start()
@@ -28,36 +25,23 @@ public class AgentSpawnerBoid : MonoBehaviour
             agents.Add(SpawnAgent());
         }
 
-        MovementManager mm0 = GetSpawningMovementManager(agents, new Vector3(-0.5f,0,0));
-        MovementManager mm1 = GetSpawningMovementManager(agents, new Vector3(3,0,0));
+        MovementManager mm = GetSpawningMovementManager(agents);
 
-        //print("movement mannagers: " + mm0 + " " + mm1);
-
-        // Check these two? are they handled the right way?
-
-        int t = 0;
         foreach (AgentControllerBoid pf in agents){
-            int team = t % 2;
-            t ++;
+            
+            pf.SetSelectable(team);
 
-            pf.SetAgent(team);
+            pf.SetMovementManager(mm);
 
-            if (team == 0) {
-                pf.SetMovementManager(mm0);
-                pf.transform.position += new Vector3(-0.5f, 0, 0);
-            } else {
-                pf.SetMovementManager(mm1);
-                pf.transform.position += new Vector3(3, 0, 0);
-            }
-
+            pf.transform.position += new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0);
             
         
         }
     }
 
-    MovementManager GetSpawningMovementManager(List<AgentControllerBoid> agents, Vector3 targetOffset){
-        FlowFieldManager flowFieldManager = new FlowFieldManager(40, 40, 0.5f, terrainLayer);
-        flowFieldManager.CreateGridFromMousePos(targetPoint.position+ targetOffset);
+    MovementManager GetSpawningMovementManager(List<AgentControllerBoid> agents){
+        FlowFieldManager flowFieldManager = new FlowFieldManager(64, 64, 0.5f, terrainLayer);
+        flowFieldManager.CreateGridFromMousePos(transform.position);
         MovementManager movementManager = new BasicMovementManager(flowFieldManager, agents);
 
         return movementManager;
