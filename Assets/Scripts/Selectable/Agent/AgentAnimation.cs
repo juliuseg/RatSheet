@@ -22,7 +22,7 @@ public class AgentAnimation : MonoBehaviour
 
 
     public void SetState (AttackState attackState, Vector2 velocity, SpriteRenderer sr) {
-        print (attackState);
+        //print (attackState);
         
         // locked
         if (Time.time < _lockedTill) {

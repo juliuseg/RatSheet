@@ -33,6 +33,8 @@ public class SelectionManager : MonoBehaviour
 
     public UIFacade uiFacade;
 
+    [SerializeField] private PathFindingController pfCont;
+
 
     // Start is called before the first frame update
     void Start()
@@ -84,7 +86,7 @@ public class SelectionManager : MonoBehaviour
                     //print("settingActive: " + i);
                     uiFacade.UIButtons[i].gameObject.SetActive(true);
                 }
-                uiFacade.UIButtons[i].tmpText.text = abilities.abilityNames[i];
+                //uiFacade.UIButtons[i].tmpText.text = abilities.abilityNames[i];
             }
 
             if (selectedAgents[0] is BuildingController)
@@ -109,6 +111,7 @@ public class SelectionManager : MonoBehaviour
     }
 
     public void SetSelecterMode(int mode){
+        print("Setting selecter mode: " + mode);
         if (selectedAgents.Count == 0) return;
 
         if (selectedAgents[0] is AgentControllerBoid) {
@@ -131,7 +134,9 @@ public class SelectionManager : MonoBehaviour
     //Returns 'true' if we touched or hovering on Unity UI element.
     public bool IsPointerOverUIElement()
     {
-        return IsPointerOverUIElement(GetEventSystemRaycastResults());
+        bool isPointerOverUIElement = IsPointerOverUIElement(GetEventSystemRaycastResults());
+        print("IsPointerOverUIElement: " + isPointerOverUIElement);
+        return isPointerOverUIElement;
     }
 
     //Returns 'true' if we touched or hovering on Unity UI element.
@@ -149,14 +154,43 @@ public class SelectionManager : MonoBehaviour
     static List<RaycastResult> GetEventSystemRaycastResults()
     {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
-        eventData.position = Input.mousePosition;
+        eventData.position = GetMousePos(Input.mousePosition);
         List<RaycastResult> raysastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, raysastResults);
         return raysastResults;
     }
 
+    public static Vector3 GetMousePos(Vector3 mousePos)
+    {
+
+        // Get the screen resolution
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+
+        Vector2 refresolution = GameObject.Find("MainCanvas").GetComponent<CanvasScaler>().referenceResolution;
+        float referenceWidth = refresolution.x;
+        float referenceHeight = refresolution.y;
+
+        float mousex = MapClamped(mousePos.x, 0, screenWidth, 0, referenceWidth);
+        float mousey = MapClamped(mousePos.y, 0, screenHeight, 0, referenceHeight);
+
+        float aspectRatioScreen = screenWidth / screenHeight;
+        float aspectRatioRef = referenceWidth / referenceHeight;
+        float yratio = referenceHeight / screenHeight;
+
+        //print ($"aspectRatioScreen: {aspectRatioScreen}, aspectRatioRef: {aspectRatioRef}, yratio: {yratio}");
+        return  new Vector3(mousex, mousey*aspectRatioRef/aspectRatioScreen, 0);
+    }
+
+    public static float MapClamped(float value, float inMin, float inMax, float outMin, float outMax)
+    {
+        float mappedValue = outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
+        return Mathf.Clamp(mappedValue, Mathf.Min(outMin, outMax), Mathf.Max(outMin, outMax));
+    }
+
+
     void ActionSelectedAgents(){
-        if (Input.GetMouseButtonDown(1) && selectedAgents.Count > 0 && !IsPointerOverUIElement())
+        if (Input .GetMouseButtonDown(1) && selectedAgents.Count > 0 && !IsPointerOverUIElement())
         {
             if (selectedAgents[0] is AgentControllerBoid)
             {
@@ -173,7 +207,7 @@ public class SelectionManager : MonoBehaviour
     }
 
     void MoveSelectedAgents(bool AttackMove, List<AgentControllerBoid> agents){
-        FlowFieldManager flowFieldManager = new FlowFieldManager(64, 64, 0.5f, terrainLayer);
+        FlowFieldManager flowFieldManager = pfCont.GetFlowFieldManager();
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (!flowFieldManager.CreateGridFromMousePos(mousePos)) return;
@@ -191,9 +225,22 @@ public class SelectionManager : MonoBehaviour
 
         }
 
+        pfCont.AddMM(movementManager);
+
 
         foreach (AgentControllerBoid agent in selectedAgents)
         {
+            // MovementManager movementManager;
+            // if (AttackMove){
+            //     movementManager = new AttackMovementManager(flowFieldManager, agents.ToList());
+
+            // } else {
+            //     movementManager = new BasicMovementManager(flowFieldManager, agents.ToList());
+
+            // }
+
+            // pfCont.AddMM(movementManager);
+
             agent.SetMovementManager(movementManager);
         }
     }
@@ -234,7 +281,7 @@ public class SelectionManager : MonoBehaviour
 
             } else {
                 selectedAgents = SelectUnits(mouseStart, mouseStart, padding: 0.1f);
-                print("Selecting single agent: " + selectedAgents.Count);
+                //print("Selecting single agent: " + selectedAgents.Count);
                 if (selectedAgents.Count > 0)
                 {
                     if (selectedAgents[0] != null){
@@ -259,12 +306,12 @@ public class SelectionManager : MonoBehaviour
                 selectionBox.gameObject.SetActive(true);
             }
 
-            float boxWidth = Input.mousePosition.x - mouseStart.x;
-            float boxHeight = Input.mousePosition.y - mouseStart.y;
+            float boxWidth = GetMousePos(Input.mousePosition).x - GetMousePos(mouseStart).x;
+            float boxHeight = GetMousePos(Input.mousePosition).y - GetMousePos(mouseStart).y;
             selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight));
-            selectionBox.anchoredPosition = mouseStart + new Vector2(boxWidth/2, boxHeight/2);
+            selectionBox.anchoredPosition = (Vector2)GetMousePos(mouseStart) + new Vector2(boxWidth/2, boxHeight/2);
 
-            
+            // Try to change this to Input.mousePosition!
             List<Selectable> foundInBox = SelectUnits(mouseStart, (Vector2)Input.mousePosition);
 
             List<Selectable> removeFromList = ListComparison.FindInBNotInA(foundInBox, highlightedAgents);

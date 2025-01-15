@@ -102,7 +102,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.15
+  m_Radius: 0.2
 --- !u!114 &1134133827843505813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,7 +393,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.25
 --- !u!1 &7553271560906833363
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,15 +661,15 @@ PrefabInstance:
       objectReference: {fileID: -1568982379, guid: 62f8df10a05ab4838ab3b0f2573b0bcc, type: 3}
     - target: {fileID: 1544310096826163756, guid: 130607475ab834a3dbc5f803d0b15121, type: 3}
       propertyPath: m_Color.b
-      value: 0.8638305
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1544310096826163756, guid: 130607475ab834a3dbc5f803d0b15121, type: 3}
       propertyPath: m_Color.g
-      value: 0.8638305
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1544310096826163756, guid: 130607475ab834a3dbc5f803d0b15121, type: 3}
       propertyPath: m_Color.r
-      value: 0.8679245
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1544310096826163756, guid: 130607475ab834a3dbc5f803d0b15121, type: 3}
       propertyPath: m_WasSpriteAssigned

@@ -12,6 +12,8 @@ public abstract class MovementManager
 
     private int id;
 
+    public event System.Action OnAllAgentsRemoved;
+
 
     public MovementManager(FlowFieldManager _flowFieldManager, List<AgentControllerBoid> _agents, int _id = 0)
     {
@@ -36,6 +38,9 @@ public abstract class MovementManager
 
     public void RemoveAgent(AgentControllerBoid agent){
         agents.Remove(agent);
+        if (agents.Count == 0){
+            OnAllAgentsRemoved?.Invoke();
+        }
     }
 
 }

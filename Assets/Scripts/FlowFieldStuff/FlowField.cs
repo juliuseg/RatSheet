@@ -28,6 +28,7 @@ public class FlowField
 
     public Vector2 CalculateFlowDirection(Vector2Int position)
     {
+        // TODO: Make it better by saving the flow at given positions and then just use that. 
         
         List<Vector2Int> neighbors = GetNeighbors(position);
         Vector2Int lowestNeighbor = position;

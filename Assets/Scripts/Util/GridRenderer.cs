@@ -16,7 +16,7 @@ public class GridRenderer : MonoBehaviour
         //print("Drawing gizmos");
         if (!Application.isPlaying)
         {
-            if (flowFieldManager == null) { return; }
+            flowFieldManager = GameObject.Find("PathFindingController").GetComponent<PathFindingController>().GetFlowFieldManager();
 
             int rows = flowFieldManager.rows;
             int cols = flowFieldManager.cols;

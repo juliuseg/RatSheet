@@ -12,9 +12,13 @@ public class BuildingProduction : MonoBehaviour {
 
     public LayerMask terrainLayer; 
 
+    public PathFindingController pfCont;
+
     public void SetupBuildingProduction(BuildingStats _buildingStats, int _team){
         buildingStats = _buildingStats;
         team = _team;
+
+        pfCont = GameObject.Find("PathFindingController").GetComponent<PathFindingController>();
     }
 
     public void AddToProduction(int i){
@@ -40,6 +44,8 @@ public class BuildingProduction : MonoBehaviour {
 
         MovementManager mm = GetSpawningMovementManager(agent,spawnPos);
 
+        pfCont.AddMM(mm);
+
         agent.SetSelectable(team);
 
         agent.SetMovementManager(mm);
@@ -59,7 +65,7 @@ public class BuildingProduction : MonoBehaviour {
 
 
     MovementManager GetSpawningMovementManager(AgentControllerBoid agent, Vector3 spawnPos){
-        FlowFieldManager flowFieldManager = new FlowFieldManager(64, 64, 0.5f, terrainLayer);
+        FlowFieldManager flowFieldManager = pfCont.GetFlowFieldManager();
         flowFieldManager.CreateGridFromMousePos(spawnPos);
         MovementManager movementManager = new BasicMovementManager(flowFieldManager, new List<AgentControllerBoid>{agent});
 

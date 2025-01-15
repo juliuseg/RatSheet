@@ -20,40 +20,41 @@ public class FlowFieldManager
         cellSize = _cellSize;
         terrainLayer = _terrainLayer;
 
-        Vector3 gridCenterOffset = new Vector3(Mathf.Floor((cols * cellSize) / 2), Mathf.Floor((rows * cellSize) / 2), 0);        
-        weightField = new Grid<int>(rows, cols, cellSize, -gridCenterOffset);
-
-        UpdateWeightGrid();
+        MakeWeightGrid();
 
 
     }
 
     public bool CreateGridFromMousePos(Vector3 mousePos) {
-        
+
         Vector2Int mousepos = weightField.GetGridPosition(mousePos);
-        targetPoint = new List<Vector3>
-        {
-            weightField.GetWorldPosition(mousepos.y, mousepos.x)
-        };
 
+        if (targetPoint == null) {
+            targetPoint = new List<Vector3>
+            {
+                weightField.GetWorldPosition(mousepos.y, mousepos.x)
+            };  
+        }
 
-        
-
-        integrationField = new IntegrationField(weightField, targetPoint);
-        flowField = new FlowField(integrationField.DistanceField);
 
         if (weightField.GetGridValue(mousepos.y, mousepos.x) == int.MaxValue)
         {
             Debug.Log("Target is on impassable terrain");
             return false;
         }
+
+        integrationField = new IntegrationField(weightField, targetPoint);
+        flowField = new FlowField(integrationField.DistanceField);
+
+        
         return true;
-        
-        
     }
 
 
-    private void UpdateWeightGrid(){
+    public void MakeWeightGrid(){
+        Vector3 gridCenterOffset = new Vector3(Mathf.Floor(cols * cellSize / 2), Mathf.Floor(rows * cellSize / 2), 0);        
+        weightField = new Grid<int>(rows, cols, cellSize, -gridCenterOffset);
+
         // Initialize weight map by checking terrain at each cell
         for (int x = 0; x < rows; x++)
         {

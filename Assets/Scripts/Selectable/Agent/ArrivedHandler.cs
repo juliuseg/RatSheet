@@ -94,7 +94,6 @@ public class ArrivedHandler : MonoBehaviour{
             if (!arrived && arrivedSetCoroutine == null) {
                 SetArrived(true);
                 GetArrivalDistance(true);
-                //print("Arrived! UpdateArrivalStatus, distanceToTarget: " + distanceToTarget + " arrivalDist: " + arrival_distance);
             }
         }
         return true;
@@ -106,7 +105,7 @@ public class ArrivedHandler : MonoBehaviour{
         if (AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Count == 0){
             return;
         }
-        foreach (AgentControllerBoid neighbor in AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => neighbor != null && Vector2.Distance(neighbor.transform.position, transform.position) < 1.0f)){
+        foreach (AgentControllerBoid neighbor in AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => neighbor != null && Vector2.Distance(neighbor.transform.position, transform.position) < 1.2f)){
             if (!arrived && neighbor.arrivedHandler.GetArrived() && arrivedCoroutine == null && arrivedSetCoroutine == null){
                 arrivedCoroutine = StartCoroutine(SetArrivedAfterSeconds());
                 //print("Arrived! from neighbors");
@@ -120,15 +119,13 @@ public class ArrivedHandler : MonoBehaviour{
                 if (neighbor == null) {continue;}
                 float distanceToTarget = AgentUtils.GetClosestTargetDistance(transform.position, movementManager.flowFieldManager.targetPoint);
 
-                if ((Vector2.Distance(neighbor.transform.position, transform.position) > 1.3f 
+                if ((Vector2.Distance(neighbor.transform.position, transform.position) > 1.4f 
                 || distanceToTarget > (GetArrivalDistance()+0.2f))
                  && arrivedCorrectionCoroutine == null){
                     if (distanceToTarget > (GetArrivalDistance()+0.2f)){
-                        //print ("Arrived correction: dist to target: " + distanceToTarget + " arrivalDist: " + (GetArrivalDistance()+0.5f));
                         arrivedCorrectionCoroutine = StartCoroutine(SetArrivedCorrectionAfterSeconds(true));
                     }
-                    if(Vector2.Distance(neighbor.transform.position, transform.position) > 1.3f){
-                        //print ("Arrived correction: dist to neighbor is greater than 1.3f: " + Vector2.Distance(neighbor.transform.position, transform.position));
+                    if(Vector2.Distance(neighbor.transform.position, transform.position) > 1.4f){
                         arrivedCorrectionCoroutine = StartCoroutine(SetArrivedCorrectionAfterSeconds(false));
                     }
                 }
@@ -158,8 +155,8 @@ public class ArrivedHandler : MonoBehaviour{
         {
             arrivedCorrection = true;
 
-            while(AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => Vector2.Distance(neighbor.transform.position, transform.position) < 0.8f).ToList().Count == 0 
-            ||(AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => Vector2.Distance(neighbor.transform.position, transform.position) < 0.8f).ToList().Count <= 2 && distanceToTarget > (GetArrivalDistance()+0.3f))){
+            while(AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => Vector2.Distance(neighbor.transform.position, transform.position) < 1.0f).ToList().Count == 0 
+            ||(AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => Vector2.Distance(neighbor.transform.position, transform.position) < 1.0f).ToList().Count <= 2 && distanceToTarget > (GetArrivalDistance()+0.3f))){
                 //print("Waiting more: " + distanceToTarget + " target pos " + targetPos + " go pos: " + transform.position);
                 yield return new WaitForSeconds(0.3f);
                 
@@ -183,7 +180,7 @@ public class ArrivedHandler : MonoBehaviour{
             SetArrived(false);
             return;
         }
-        neighborsWhenStopped = AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => Vector2.Distance(neighbor.transform.position, transform.position) < 1.0f).ToList();
+        neighborsWhenStopped = AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => Vector2.Distance(neighbor.transform.position, transform.position) < 1.2f).ToList();
         if (neighborsWhenStopped.Count == 0){
             neighborsWhenStopped = AgentUtils.GetNeighborsInGroup(neighbors, movementManager);
         }
