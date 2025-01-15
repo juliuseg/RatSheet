@@ -142,7 +142,7 @@ public class ArrivedHandler : MonoBehaviour{
         SetArrived(true);
         arrivedCoroutine = null;
 
-        print("Arrived! SetArrivedAfterSeconds");
+        //print("Arrived! SetArrivedAfterSeconds");
     }
 
     private IEnumerator SetArrivedCorrectionAfterSeconds(bool wasTargetDist)
