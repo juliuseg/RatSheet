@@ -55,19 +55,25 @@ public class FlowFieldManager
         Vector3 gridCenterOffset = new Vector3(Mathf.Floor(cols * cellSize / 2), Mathf.Floor(rows * cellSize / 2), 0);        
         weightField = new Grid<int>(rows, cols, cellSize, -gridCenterOffset);
 
+        
         // Initialize weight map by checking terrain at each cell
         for (int x = 0; x < rows; x++)
         {
             for (int y = 0; y < cols; y++)
             {
                 Vector3 cellPosition = weightField.GetWorldPosition(x, y);
-                weightField.SetGridValue(x, y, DetermineWeight(cellPosition));
+                int weight = DetermineWeight(cellPosition);
+                weightField.SetGridValue(x, y, weight);
+                
+
             }
         }
+
     }
 
     private int DetermineWeight(Vector3 cellPosition)
     {
+        
         // Use an OverlapBox to detect terrain within the cell
         Collider2D[] colliders = Physics2D.OverlapBoxAll(cellPosition, new Vector2(cellSize, cellSize) * 0.9f, 0, terrainLayer);
 

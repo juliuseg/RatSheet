@@ -8,47 +8,31 @@ using System;
 
 public class SelectionManager : MonoBehaviour
 {
-    public RectTransform selectionBox;
-
-    [HideInInspector] public List<Selectable> selectedAgents;
-    //private List<AgentControllerBoid> selectedAgentsPrevios;
-
-    [HideInInspector] public List<Selectable> highlightedAgents;
-    //private List<AgentControllerBoid> highlightedAgentsPrevios;
-
+    // World class assignment:
+    public RectTransform selectionBox;  
     public Transform targetPoint;
-
-
     public GridRenderer gridRenderer;
-
-    [SerializeField] public int selecterMode = -1;
-
-
-    [HideInInspector] public int team;
-
     public UIFacade uiFacade;
 
-    [SerializeField] private PathFindingController pfCont;
-
-
-    private SelectionSelection selection;
+    [HideInInspector] public List<Selectable> selectables;
+    [HideInInspector] public int selecterMode = 0;
+    [HideInInspector] public int team;
 
     private SelectionUI selectionUI;
-
+    private SelectionSelection selection;
     private SelectionAction selectionAction;
-    private SelectionMovement selectionMovement;
 
     // Start is called before the first frame update
     void Start()
     {
-        selectedAgents = new List<Selectable>();
-        highlightedAgents = new List<Selectable>();
+        selectables = new List<Selectable>();
         team = -1;
 
         selection = new SelectionSelection(this, selectionBox);
         selectionUI = new SelectionUI(this, uiFacade);
 
-        selectionMovement = new SelectionMovement(this, targetPoint, gridRenderer, pfCont);
+        PathFindingController pfCont = GameObject.Find("PathFindingController").GetComponent<PathFindingController>();
+        SelectionMovement selectionMovement = new SelectionMovement(this, targetPoint, gridRenderer, pfCont);
         selectionAction = new SelectionAction(this, selectionMovement);
 
     }
@@ -63,26 +47,22 @@ public class SelectionManager : MonoBehaviour
 
         // Move selected agents
         selectionAction.ActionSelectedAgents();
+        
 
     }
 
     public void SetSelecterMode(int mode){
         print("Setting selecter mode: " + mode);
-        if (selectedAgents.Count == 0) return;
+        if (selectables.Count == 0) return;
 
-        if (selectedAgents[0] is AgentControllerBoid) {
+        if (selectables[0] is AgentControllerBoid) {
             if (mode == selecterMode) {
-                selecterMode = -1;
+                selecterMode = 0;
             } else {
                 selecterMode = mode;
             }
-        } else {
-            List<BuildingController> buildings = selectedAgents.Cast<BuildingController>().ToList();
-
-            foreach (BuildingController building in buildings)
-            {
-                building.AddToProduction(mode);
-            }
+        } else if (selectables[0] is BuildingController) {
+            selectionAction.ActionSelectedBuildings(mode);
         }
 
     }

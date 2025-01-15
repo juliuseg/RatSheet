@@ -25,6 +25,8 @@ public class AgentControllerBoid : Selectable
 
     private AgentAnimation agentAnimation;
 
+    private Vector2 velocity;
+
     public override Abilities GetAbilities(){
         return agentAbilities;
     }
@@ -49,6 +51,8 @@ public class AgentControllerBoid : Selectable
 
         agentAnimation = GetComponent<AgentAnimation>();
 
+        velocity = Vector2.zero;
+
     }
 
     public override void SetSelectionCircleActive(int active)
@@ -69,11 +73,18 @@ public class AgentControllerBoid : Selectable
 
     public void SetMovementManager(MovementManager _movementManager)
     {
+        //print ("Setting movement manager: " + _movementManager);
         if (movementManager != null)
         {
             movementManager.RemoveAgent(this);
         }
+
         movementManager = _movementManager;
+        if (_movementManager == null) {
+            //print("MovementManager is null");
+            return;
+        }
+
         
 
         arrivedHandler.Setup(movementManager, rb, AgentUtils.GetNeighborsAgents(neighbors));
@@ -95,31 +106,28 @@ public class AgentControllerBoid : Selectable
 
     private void FixedUpdate()
     {
-        //print("FixedUpdate");
-        if (movementManager != null && movementManager.flowFieldManager == null || agentStats == null) {
-            print("MovementManager is " + movementManager != null + "flowFieldManager is " + (movementManager.flowFieldManager==null) + " and agentStats is " + (agentStats==null));
-            return;
-        }
+        AttackState attackState = AttackState.idle;
+        if (agentStats ==null) return;
 
         if (rb.isKinematic) rb.isKinematic = false;
 
-        AttackState attackState = AttackState.idle;
-        Vector2 velocity = Vector2.zero;
+        if (movementManager == null)
+        {
+            agentVelocity.SetVelocity(Vector2.zero);
+        }
 
         // Handle Attack only if attackmovement manager. 
-        if (movementManager.GetType() == typeof(AttackMovementManager) || arrivedHandler.GetInitialArrived()){
+        if ((movementManager != null && movementManager.GetType() == typeof(AttackMovementManager)) 
+        || arrivedHandler.GetInitialArrived()){
             attackState = attackController.HandleAttack(neighbors, team, out velocity);
         }
         // Handle Movement if not actively attacking
-        if (attackState == AttackState.idle)
+        if (attackState == AttackState.idle && movementManager != null)
         {
             attackState = movementController.HandleMovement(arrivedHandler, movementManager, ref attackState, out velocity);
         }
-
-
         
-        // Adjust Appearance
-        //print("Attack state: " + attackState);
+
         HandleAppearance(attackState);
 
         agentAnimation.SetState(attackState, velocity, spriteRenderer);
@@ -133,7 +141,7 @@ public class AgentControllerBoid : Selectable
             arrivedHandler.GetArrivedCorrection(),
             attackState,
             movementManager,
-            AgentUtils.GetNeighborsInGroup(AgentUtils.GetNeighborsAgents(neighbors), movementManager).Count
+            movementManager != null?AgentUtils.GetNeighborsInGroup(AgentUtils.GetNeighborsAgents(neighbors), movementManager).Count:0
         );
     }
 

@@ -26,7 +26,7 @@ public class AgentAnimation : MonoBehaviour
         
         // locked
         if (Time.time < _lockedTill) {
-            print("locked");
+            //print("locked");
             return;
         }
 

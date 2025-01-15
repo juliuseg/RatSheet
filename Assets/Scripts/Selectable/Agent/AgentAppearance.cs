@@ -32,12 +32,13 @@ public class AgentAppearance{
         else if (mode == 1)
         {
             selectionCircle.SetActive(true);
-            selectionCircle.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 0.5f);
+            selectionCircle.GetComponent<SpriteRenderer>().color = SelectionUtils.GetUIColor();
+            
         }
         else if (mode == 2)
         {
             selectionCircle.SetActive(true);
-            selectionCircle.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 0.7f);
+            selectionCircle.GetComponent<SpriteRenderer>().color = SelectionUtils.GetUIColor();
         }
     }
 

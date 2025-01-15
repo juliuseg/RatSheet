@@ -14,15 +14,17 @@ public class SelectionUI
     }
 
     public void HandleUI(){
-        if (sm.selectedAgents.Count > 0){
+        if (sm.selectables.Count > 0){
             uiFacade.UI.SetActive(true);
-            if (sm.selectedAgents[0] is AgentControllerBoid)
+            if (sm.selectables[0] is AgentControllerBoid)
             {
-                // Change UI button colors based on selecterMode
-                uiFacade.UIButtons[0].image.color = sm.selecterMode == 0 ? Color.green : Color.white;
-            } 
+                for (int i = 0; i < uiFacade.UIButtons.Length; i++)
+                {
+                    uiFacade.UIButtons[i].image.color = sm.selecterMode == i ? SelectionUtils.GetUIColor() : Color.white;
+                }
+            }
 
-            Abilities abilities = sm.selectedAgents[0].GetAbilities();
+            Abilities abilities = sm.selectables[0].GetAbilities();
 
             for (int i = 0; i < uiFacade.UIButtons.Length; i++)
             {
@@ -36,9 +38,9 @@ public class SelectionUI
                 //uiFacade.UIButtons[i].tmpText.text = abilities.abilityNames[i];
             }
 
-            if (sm.selectedAgents[0] is BuildingController)
+            if (sm.selectables[0] is BuildingController)
             {
-                BuildingController b = sm.selectedAgents[0] as BuildingController;
+                BuildingController b = sm.selectables[0] as BuildingController;
                 float p = b.buildingProduction.GetFinishPercentage();
 
                 if (p == -1){
@@ -52,7 +54,7 @@ public class SelectionUI
             }
 
         } else {
-            sm.selecterMode = -1;
+            sm.selecterMode = 0;
             uiFacade.UI.SetActive(false);
         }
 
@@ -61,9 +63,13 @@ public class SelectionUI
     }
 
     void CheckUIInput(){
-        if (Input.GetKeyDown(KeyCode.T) && sm.selectedAgents.Count > 0 && sm.selectedAgents[0] is AgentControllerBoid)
+        if (Input.GetKeyDown(KeyCode.T) && sm.selectables.Count > 0 && sm.selectables[0] is AgentControllerBoid)
         {
-            sm.SetSelecterMode(0);
+            sm.SetSelecterMode(1);
+        }
+        if (Input.GetKeyDown(KeyCode.S) && sm.selectables.Count > 0 && sm.selectables[0] is AgentControllerBoid)
+        {
+            sm.SetSelecterMode(2);
         }
     }
 }

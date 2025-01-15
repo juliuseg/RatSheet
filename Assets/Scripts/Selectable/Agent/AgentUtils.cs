@@ -27,15 +27,15 @@ public static class AgentUtils
     }
 
     public static List<AgentControllerBoid> GetNeighborsInGroup(List<AgentControllerBoid> neighbors, MovementManager movementManager){
-        return neighbors.Where(neighbor => 
+        return (movementManager != null)?neighbors.Where(neighbor => 
         {
             
-            if (neighbor != null && neighbor.movementManager.GetID() == movementManager.GetID())
+            if (neighbor != null && neighbor.movementManager != null && neighbor.movementManager.GetID() == movementManager.GetID())
             {
                 return true;
             }
             return false;
-        }).ToList();
+        }).ToList():new List<AgentControllerBoid>();
     }
 
     public static Selectable GetClosestNeigborOnOtherTeam(List<Selectable> neighbors, Vector3 targetPoint, int team){

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6177667888752400265}
   - component: {fileID: 3172217692970376360}
   - component: {fileID: 5611980074724410574}
+  - component: {fileID: 912166856429067156}
   m_Layer: 6
   m_Name: Stone3
   m_TagString: Rock
@@ -27,9 +28,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2978788939491602986}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.43, y: 4.48, z: -2}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,12 +76,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: eb834af3b541d4ee3a53b44a5cd2d66f, type: 3}
+  m_Sprite: {fileID: 1978018429, guid: eb834af3b541d4ee3a53b44a5cd2d66f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.845, y: 1.159}
+  m_Size: {x: 1.263, y: 0.625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -115,21 +116,21 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.43}
+  m_Offset: {x: 0, y: -0.18}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.845, y: 1.159}
-    newSize: {x: 1.845, y: 1.159}
+    oldSize: {x: 1.263, y: 0.625}
+    newSize: {x: 1.263, y: 0.625}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.32, y: 0.34}
+  m_Size: {x: 1.18, y: 0.2}
   m_EdgeRadius: 0
 --- !u!114 &5611980074724410574
 MonoBehaviour:
@@ -141,5 +142,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d31c7e7ba3b748f58036ce164dd95f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &912166856429067156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2978788939491602986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27c86d03a6a094a68954d38df8b29c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -8,11 +8,15 @@ public class SelectionSelection// : MonoBehaviour
     private bool mouseDown;
     private Vector2 mouseStart;
 
-    public RectTransform selectionBox;
+    private RectTransform selectionBox;
+    private List<Selectable> highlightedAgents;
+
 
     public SelectionSelection(SelectionManager _sm, RectTransform _selectionBox){
         sm = _sm;
         selectionBox = _selectionBox;
+
+        highlightedAgents = new List<Selectable>();
     }
 
     public void SelectionBoxLogic(){
@@ -26,37 +30,37 @@ public class SelectionSelection// : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && mouseDown)
         {
-            sm.selecterMode = -1;
+            sm.selecterMode = 0;
 
             // Deselect all agents
-            foreach (Selectable agent in sm.selectedAgents)
+            foreach (Selectable agent in sm.selectables)
             {
                 if (agent != null)
                     agent.SetSelectionCircleActive(0);
             }
-            sm.selectedAgents.Clear();
+            sm.selectables.Clear();
 
             mouseDown = false;
             if (selectionBox.gameObject.activeSelf) {
                 selectionBox.gameObject.SetActive(false);
 
-                foreach (Selectable agent in sm.highlightedAgents)
+                foreach (Selectable agent in highlightedAgents)
                 {
                     if (agent != null){
                         agent.SetSelectionCircleActive(2);
-                        sm.selectedAgents.Add(agent);
+                        sm.selectables.Add(agent);
                     }
                 }
 
             } else {
-                sm.selectedAgents = SelectUnits(mouseStart, mouseStart, padding: 0.1f);
+                sm.selectables = SelectUnits(mouseStart, mouseStart, padding: 0.1f);
                 //print("Selecting single agent: " + selectedAgents.Count);
-                if (sm.selectedAgents.Count > 0)
+                if (sm.selectables.Count > 0)
                 {
-                    if (sm.selectedAgents[0] != null){
+                    if (sm.selectables[0] != null){
                         
-                        sm.selectedAgents = new List<Selectable> { sm.selectedAgents[0] };
-                        sm.selectedAgents[0].SetSelectionCircleActive(2);
+                        sm.selectables = new List<Selectable> { sm.selectables[0] };
+                        sm.selectables[0].SetSelectionCircleActive(2);
                     }
 
                 } 
@@ -83,8 +87,8 @@ public class SelectionSelection// : MonoBehaviour
             // Try to change this to Input.mousePosition!
             List<Selectable> foundInBox = SelectUnits(mouseStart, (Vector2)Input.mousePosition);
 
-            List<Selectable> removeFromList = ListComparison.FindInBNotInA(foundInBox, sm.highlightedAgents);
-            List<Selectable> addToList = ListComparison.FindInBNotInA(sm.highlightedAgents, foundInBox);
+            List<Selectable> removeFromList = ListComparison.FindInBNotInA(foundInBox, highlightedAgents);
+            List<Selectable> addToList = ListComparison.FindInBNotInA(highlightedAgents, foundInBox);
 
             foreach (Selectable agent in removeFromList)
             {
@@ -93,7 +97,7 @@ public class SelectionSelection// : MonoBehaviour
                     agent.SetSelectionCircleActive(0);
 
                     // Remove from selected list
-                    sm.highlightedAgents.Remove(agent);
+                    highlightedAgents.Remove(agent);
                 }
             }
 
@@ -105,7 +109,7 @@ public class SelectionSelection// : MonoBehaviour
                     agent.SetSelectionCircleActive(1);
 
                     // Add to selected list
-                    sm.highlightedAgents.Add(agent);
+                    highlightedAgents.Add(agent);
                 }
             }
         }

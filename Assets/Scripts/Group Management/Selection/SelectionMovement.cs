@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-public class SelectionMovement : MonoBehaviour
+public class SelectionMovement
 {
     private SelectionManager sm;
     private Transform targetPoint;
@@ -28,6 +28,7 @@ public class SelectionMovement : MonoBehaviour
         gridRenderer.flowFieldManager = flowFieldManager;
 
         targetPoint.position = new Vector3(mousePos.x, mousePos.y, 0);
+        targetPoint.GetComponent<MarkerAnimation>().PlaceMarker(AttackMove);
 
         MovementManager movementManager;
         if (AttackMove){
@@ -41,7 +42,7 @@ public class SelectionMovement : MonoBehaviour
         pfCont.AddMM(movementManager);
 
 
-        foreach (AgentControllerBoid agent in sm.selectedAgents)
+        foreach (AgentControllerBoid agent in sm.selectables)
         {
             // MovementManager movementManager;
             // if (AttackMove){

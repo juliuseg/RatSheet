@@ -72,4 +72,9 @@ public static class SelectionUtils {
         EventSystem.current.RaycastAll(eventData, raysastResults);
         return raysastResults;
     }
+
+    public static Color GetUIColor(){
+        return new Color(1, 0.7647f, 0.2392f, 0.7f);
+        
+    }
 }
