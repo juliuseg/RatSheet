@@ -8,10 +8,10 @@ public class AgentVelocity
     private AgentStats agentStats;
 
     private MovementManager movementManager;
-    private List<AgentControllerBoid> neighbors;
+    private List<AgentMoveable> neighbors;
 
         
-    public AgentVelocity(Rigidbody2D _rb, Transform _transform, AgentStats _agentStats, List<AgentControllerBoid> _neighbors)
+    public AgentVelocity(Rigidbody2D _rb, Transform _transform, AgentStats _agentStats, List<AgentMoveable> _neighbors)
     {
         rb = _rb;
         transform = _transform;

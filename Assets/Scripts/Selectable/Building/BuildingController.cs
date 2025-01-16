@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D) , typeof(SelectableHPController)), RequireComponent(typeof(BuildingProduction))]
+[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D) , typeof(SelectableHPController)), RequireComponent(typeof(BuildingProduction))]
 public class BuildingController : Selectable
 {
     private BuildingAppearance buildingAppearance;
@@ -16,11 +16,13 @@ public class BuildingController : Selectable
     private BuildingAbilities buildingAabilities;
     public override Abilities abilities => buildingAabilities;
 
+    [SerializeField] private Transform spawnPoint;
+
 
     private void Start() {
         SetSelectable(team);
         buildingProduction = GetComponent<BuildingProduction>();
-        buildingProduction.SetupBuildingProduction(buildingStats, team);
+        buildingProduction.SetupBuildingProduction(buildingStats, team, spawnPoint);
 
         buildingAabilities = new BuildingAbilities();
 

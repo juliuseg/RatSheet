@@ -8,18 +8,29 @@ public abstract class MovementManager
     public FlowFieldManager flowFieldManager; 
     public abstract MovementManagerType ManagerType { get; }
 
-    public List<AgentControllerBoid> agents;
+    public List<AgentMoveable> agents;
 
     private int id;
 
     public event System.Action OnAllAgentsRemoved;
 
+    public event System.Action InitialArrival;
 
-    public MovementManager(FlowFieldManager _flowFieldManager, List<AgentControllerBoid> _agents, int _id = 0)
+    public bool oneAgentArrived;
+
+
+    public MovementManager(FlowFieldManager _flowFieldManager, List<AgentMoveable> _agents, int _id = 0)
     {
         flowFieldManager = _flowFieldManager;
         agents = _agents;
         id = _id==0?Random.Range(0, 2000000):_id;
+
+        oneAgentArrived = false;
+
+        foreach (AgentMoveable agent in agents)
+        {
+            agent.arrivedHandler.InitialArrival += () => SetInitalArrivedAgent();
+        }
         //Debug.Log("MovementManager created with id: " + id);
 
     }
@@ -36,10 +47,17 @@ public abstract class MovementManager
         return id;
     }
 
-    public void RemoveAgent(AgentControllerBoid agent){
+    public void RemoveAgent(AgentMoveable agent){
         agents.Remove(agent);
         if (agents.Count == 0){
             OnAllAgentsRemoved?.Invoke();
+        }
+    }
+
+    public void SetInitalArrivedAgent(){
+        if (!oneAgentArrived){
+            InitialArrival?.Invoke();
+            oneAgentArrived = true;
         }
     }
 

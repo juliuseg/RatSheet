@@ -21,20 +21,21 @@ public class AgentSpawnerBoid : MonoBehaviour
     {   
         pfCont = GameObject.Find("PathFindingController").GetComponent<PathFindingController>();
 
-        List<AgentControllerBoid> agents = new List<AgentControllerBoid>();
+        List<AgentMoveable> agents = new List<AgentMoveable>();
         
         for (int i = 0; i < agentCount; i++)
         {
-            agents.Add(SpawnAgent());
+            AgentMoveable agent = SpawnAgent();
+            agent.SetSelectable(team);
+            agents.Add(agent);
+            
         }
 
         MovementManager mm = GetSpawningMovementManager(agents);
 
         pfCont.AddMM(mm);
 
-        foreach (AgentControllerBoid pf in agents){
-            
-            pf.SetSelectable(team);
+        foreach (AgentMoveable pf in agents){
 
             pf.SetMovementManager(mm);
 
@@ -45,7 +46,7 @@ public class AgentSpawnerBoid : MonoBehaviour
         
     }
 
-    MovementManager GetSpawningMovementManager(List<AgentControllerBoid> agents){
+    MovementManager GetSpawningMovementManager(List<AgentMoveable> agents){
         FlowFieldManager flowFieldManager = pfCont.GetFlowFieldManager();
         flowFieldManager.CreateGridFromMousePos(transform.position);
         MovementManager movementManager = new BasicMovementManager(flowFieldManager, agents);
@@ -53,11 +54,11 @@ public class AgentSpawnerBoid : MonoBehaviour
         return movementManager;
     }
 
-    AgentControllerBoid SpawnAgent()
+    AgentMoveable SpawnAgent()
     {
         GameObject pf = Instantiate(agentPrefab, transform.position, Quaternion.identity);
         pf.name = "Agent"+"_"+Random.Range(1000, 10000);
-        return pf.GetComponent<AgentControllerBoid>();
+        return pf.GetComponent<AgentMoveable>();
         
     }
 

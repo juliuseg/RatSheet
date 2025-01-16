@@ -22,6 +22,8 @@ public class SelectionManager : MonoBehaviour
     private SelectionSelection selection;
     private SelectionAction selectionAction;
 
+    public event Action OnSelectionChange;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +37,7 @@ public class SelectionManager : MonoBehaviour
         SelectionMovement selectionMovement = new SelectionMovement(this, targetPoint, gridRenderer, pfCont);
         selectionAction = new SelectionAction(this, selectionMovement);
 
+        
     }
 
     // Update is called once per frame
@@ -47,15 +50,13 @@ public class SelectionManager : MonoBehaviour
 
         // Move selected agents
         selectionAction.ActionSelectedAgents();
-        
-
     }
 
     public void SetSelecterMode(int mode){
         print("Setting selecter mode: " + mode);
         if (selectables.Count == 0) return;
 
-        if (selectables[0] is AgentControllerBoid) {
+        if (selectables[0] is AgentMoveable) {
             if (mode == selecterMode) {
                 selecterMode = 0;
             } else {
@@ -65,5 +66,10 @@ public class SelectionManager : MonoBehaviour
             selectionAction.ActionSelectedBuildings(mode);
         }
 
+    }
+
+    public void NotifySelectionChanged()
+    {
+        OnSelectionChange?.Invoke();
     }
 }

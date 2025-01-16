@@ -7,7 +7,7 @@ public static class BoidBehavior {
     
     
 
-    public static Vector2 CalculateBoidBehaviors(List<AgentControllerBoid> ns, bool arrived, Vector3 position, AgentStats agentStats)
+    public static Vector2 CalculateBoidBehaviors(List<AgentMoveable> ns, bool arrived, Vector3 position, AgentStats agentStats)
     {
         Vector2 separation = CalculateSeparation(ns, position, agentStats) * agentStats.separationWeight;
         Vector2 cohesion = CalculateCohesion(ns, position) * agentStats.cohesionWeight;
@@ -16,12 +16,12 @@ public static class BoidBehavior {
         return separation + cohesion + alignment;
     }
 
-    private static Vector2 CalculateSeparation(List<AgentControllerBoid> ns, Vector3 position, AgentStats agentStats)
+    private static Vector2 CalculateSeparation(List<AgentMoveable> ns, Vector3 position, AgentStats agentStats)
     {
         Vector2 separationForce = Vector2.zero;
         int count = 0;
 
-        foreach (AgentControllerBoid neighbor in ns)
+        foreach (AgentMoveable neighbor in ns)
         {
             float distance = Vector2.Distance(position, neighbor.transform.position);
             if (distance < agentStats.separationDistance && distance > 0)
@@ -40,12 +40,12 @@ public static class BoidBehavior {
         return separationForce;
     }
 
-    private static Vector2 CalculateCohesion(List<AgentControllerBoid> ns, Vector3 position)
+    private static Vector2 CalculateCohesion(List<AgentMoveable> ns, Vector3 position)
     {
         Vector2 cohesionCenter = Vector2.zero;
         int count = 0;
 
-        foreach (AgentControllerBoid neighbor in ns)
+        foreach (AgentMoveable neighbor in ns)
         {
             cohesionCenter += (Vector2)neighbor.transform.position;
             count++;
@@ -61,12 +61,12 @@ public static class BoidBehavior {
         return Vector2.zero;
     }
 
-    private static Vector2 CalculateAlignment(List<AgentControllerBoid> ns)
+    private static Vector2 CalculateAlignment(List<AgentMoveable> ns)
     {
         Vector2 alignmentForce = Vector2.zero;
         int count = 0;
 
-        foreach (AgentControllerBoid neighbor in ns)
+        foreach (AgentMoveable neighbor in ns)
         {
             alignmentForce += (Vector2)neighbor.transform.up;
             count++;

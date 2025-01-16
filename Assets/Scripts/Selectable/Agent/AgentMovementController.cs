@@ -5,7 +5,7 @@ public class AgentMovementController
 {
     private readonly AgentVelocity agentVelocity;
 
-    public AgentMovementController(AgentControllerBoid agent, AgentVelocity agentVelocity)
+    public AgentMovementController(AgentMoveable agent, AgentVelocity agentVelocity)
     {
         this.agentVelocity = agentVelocity;
     }

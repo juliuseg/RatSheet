@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   defense: 1.5
+  uiInfo: {fileID: 11400000, guid: 804134d84324c463896f71a2394df6bd, type: 2}
   SpawnRadius: 1
   spawnObjects:
   - {fileID: 11400000, guid: 7e396a215ae9e4ec3a7ca2a4b7d76448, type: 2}

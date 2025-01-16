@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,13 @@ public class ArrivedHandler : MonoBehaviour{
 
     private bool newFlowfield;
 
-    private List<AgentControllerBoid> neighbors = new List<AgentControllerBoid>(); // List of nearby agents
-    private List<AgentControllerBoid> neighborsWhenStopped = new List<AgentControllerBoid>(); // List of nearby agents
+    private List<AgentMoveable> neighbors = new List<AgentMoveable>(); // List of nearby agents
+    private List<AgentMoveable> neighborsWhenStopped = new List<AgentMoveable>(); // List of nearby agents
 
 
-    
+    public event Action InitialArrival;
 
-    public void Setup(MovementManager _movementManager, Rigidbody2D _rb, List<AgentControllerBoid> _neighbors){
+    public void Setup(MovementManager _movementManager, Rigidbody2D _rb, List<AgentMoveable> _neighbors){
         initialArrived = false;
         arrived = false;
         arrivedCorrection = false;
@@ -105,7 +106,7 @@ public class ArrivedHandler : MonoBehaviour{
         if (AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Count == 0){
             return;
         }
-        foreach (AgentControllerBoid neighbor in AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => neighbor != null && Vector2.Distance(neighbor.transform.position, transform.position) < 1.2f)){
+        foreach (AgentMoveable neighbor in AgentUtils.GetNeighborsInGroup(neighbors, movementManager).Where(neighbor => neighbor != null && Vector2.Distance(neighbor.transform.position, transform.position) < 1.2f)){
             if (!arrived && neighbor.arrivedHandler.GetArrived() && arrivedCoroutine == null && arrivedSetCoroutine == null){
                 arrivedCoroutine = StartCoroutine(SetArrivedAfterSeconds());
                 //print("Arrived! from neighbors");
@@ -115,7 +116,7 @@ public class ArrivedHandler : MonoBehaviour{
         }
         if (arrived){
             if (neighborsWhenStopped.Count == 0) {SetArrived(false); return;}
-            foreach (AgentControllerBoid neighbor in neighborsWhenStopped){
+            foreach (AgentMoveable neighbor in neighborsWhenStopped){
                 if (neighbor == null) {continue;}
                 float distanceToTarget = AgentUtils.GetClosestTargetDistance(transform.position, movementManager.flowFieldManager.targetPoint);
 
@@ -192,7 +193,7 @@ public class ArrivedHandler : MonoBehaviour{
         }
         if (debug){
             string p = "My ID:" + movementManager.GetID() + "agents arrived: " + movementManager.GetAgentArrived() + " arrival distance: " + Mathf.Sqrt(movementManager.GetAgentArrived() * 0.1f + 0.1f) + " agents: ";
-            foreach(AgentControllerBoid agent in movementManager.agents.Where(agent => agent.arrivedHandler.GetArrived())){
+            foreach(AgentMoveable agent in movementManager.agents.Where(agent => agent.arrivedHandler.GetArrived())){
                 p += agent.gameObject.name + " with mm id: " + agent.movementManager.GetID() + " , ";
             }
             //print(p);
@@ -229,13 +230,15 @@ public class ArrivedHandler : MonoBehaviour{
         yield return new WaitForSeconds(0.2f); 
         arrivalDistance = GetArrivalDistance();
         arrived = true;
-        initialArrived = true;
+        
         arrivedSetCoroutine = null;
 
-        //print ("Arrived! mm id: " + movementManager.GetID() + " my name " + gameObject.name);
+        if (initialArrived == false) {
+            initialArrived = true;
+            InitialArrival?.Invoke();
+        }
 
         
-
     }
 
 

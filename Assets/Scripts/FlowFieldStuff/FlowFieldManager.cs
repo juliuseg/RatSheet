@@ -93,7 +93,7 @@ public class FlowFieldManager
     }
 
     public Vector2 GetFlowFieldValue(Vector2Int position) {
-        
+        Debug.Log("ff null: " + (flowField == null));
         return flowField.CalculateFlowDirection(position);
 
     }

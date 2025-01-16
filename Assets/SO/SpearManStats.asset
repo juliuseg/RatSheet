@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ac8535b6a26148b9b593fc9893b37ff, type: 3}
+  m_Name: SpearManStats
+  m_EditorClassIdentifier: 
+  maxHealth: 5
+  defense: 1.5
+  uiInfo: {fileID: 11400000, guid: 8eb00a2d8e37249849fdcc557b2fc066, type: 2}
+  maxSpeed: 2.5
+  maxForce: 2
+  neighborRadius: 1.25
+  separationDistance: 2.42
+  separationWeight: 9.78
+  cohesionWeight: 5.37
+  alignmentWeight: 5.52
+  boidStrength: 0.381
+  velocityInterpolation: 0.552
+  attack: {fileID: 11400000, guid: 6cbf587f42a9e4aba822fccc4925258f, type: 2}
+  abilities:
+  - Attack
+  - Abb 1
+  - Abb 2

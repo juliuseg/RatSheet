@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a2367159d6c40479a1d485833bf4b4, type: 3}
+  m_Name: SpearManUIInfo
+  m_EditorClassIdentifier: 
+  nameText: Spear Rat
+  descriptionText: A rat with a spear. Well a lance, but who cares. Isnt too fond
+    of poking stuff with it, but you do what you gotta do to survive.
+  portrait: {fileID: 21300000, guid: e2e6c0093d74d498ca45d964101df4df, type: 3}
+  miniPortrait: {fileID: 21300000, guid: 52d5560b4e7ba4fea935872dbfa224ff, type: 3}
+  actionsInfos:
+  - {fileID: 11400000, guid: 5b6f621ede014436c9ca4980303b49f2, type: 2}
+  - {fileID: 11400000, guid: 9f5450300e8e84a5897ce5062e02dada, type: 2}
+  - {fileID: 11400000, guid: de9909dd133f64f1da24a66b63cdc04a, type: 2}

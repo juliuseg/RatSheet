@@ -19,7 +19,7 @@ public class SelectionMovement
         this.pfCont = pfCont;
     }
 
-    public void MoveSelectedAgents(bool AttackMove, List<AgentControllerBoid> agents){
+    public void MoveSelectedAgents(bool AttackMove, List<AgentMoveable> agents){
         FlowFieldManager flowFieldManager = pfCont.GetFlowFieldManager();
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -27,8 +27,7 @@ public class SelectionMovement
 
         gridRenderer.flowFieldManager = flowFieldManager;
 
-        targetPoint.position = new Vector3(mousePos.x, mousePos.y, 0);
-        targetPoint.GetComponent<MarkerAnimation>().PlaceMarker(AttackMove);
+        
 
         MovementManager movementManager;
         if (AttackMove){
@@ -39,10 +38,17 @@ public class SelectionMovement
 
         }
 
+        targetPoint.position = new Vector3(mousePos.x, mousePos.y, 0);
+        targetPoint.GetComponent<MarkerAnimation>().PlaceMarker(AttackMove);
+
+        // add mm to targetpoint for event. 
+        movementManager.InitialArrival += () => targetPoint.GetComponent<MarkerAnimation>().RemoveMarker();
+
+
         pfCont.AddMM(movementManager);
 
 
-        foreach (AgentControllerBoid agent in sm.selectables)
+        foreach (AgentMoveable agent in sm.selectables)
         {
             // MovementManager movementManager;
             // if (AttackMove){

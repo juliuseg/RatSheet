@@ -70,7 +70,7 @@ public class BezierCurve : MonoBehaviour
 
         foreach (Collider2D hitCollider in hitColliders)
         {
-            AgentControllerBoid agent = hitCollider.GetComponent<AgentControllerBoid>();
+            AgentMoveable agent = hitCollider.GetComponent<AgentMoveable>();
             if (agent != null && Vector2.Distance(transform.position,hitCollider.transform.position) < radius)
             {
                 agent.health.TakeDamage(2);

@@ -16,9 +16,9 @@ public class SelectionAction
     public void ActionSelectedAgents(){
         if (Input .GetMouseButtonDown(1) && sm.selectables.Count > 0 && !SelectionUtils.IsPointerOverUIElement())
         {
-            if (sm.selectables[0] is AgentControllerBoid)
+            if (sm.selectables[0] is AgentMoveable)
             {
-                List<AgentControllerBoid> agents = sm.selectables.Cast<AgentControllerBoid>().ToList();
+                List<AgentMoveable> agents = sm.selectables.Cast<AgentMoveable>().ToList();
                 if (sm.selecterMode == 0){
                     smov.MoveSelectedAgents(false, agents);
 
@@ -29,12 +29,12 @@ public class SelectionAction
 
             } 
         } else if (sm.selecterMode == 2){
-            if (sm.selectables[0] is AgentControllerBoid)
+            if (sm.selectables[0] is AgentMoveable)
             {
-                List<AgentControllerBoid> agents = sm.selectables.Cast<AgentControllerBoid>().ToList();
+                List<AgentMoveable> agents = sm.selectables.Cast<AgentMoveable>().ToList();
 
                 // Stop selected agents
-                foreach (AgentControllerBoid agent in agents)
+                foreach (AgentMoveable agent in agents)
                 {
                     agent.SetMovementManager(null);
                 }

@@ -57,9 +57,11 @@ public static class SelectionUtils {
         int UILayer = LayerMask.NameToLayer("UI");
         for (int index = 0; index < eventSystemRaysastResults.Count; index++)
         {
+            Debug.Log("Layer: " + eventSystemRaysastResults[index].gameObject.layer);
             RaycastResult curRaysastResult = eventSystemRaysastResults[index];
             if (curRaysastResult.gameObject.layer == UILayer)
                 return true;
+            
         }
         return false;
     }
@@ -67,14 +69,14 @@ public static class SelectionUtils {
     public static List<RaycastResult> GetEventSystemRaycastResults()
     {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
-        eventData.position = SelectionUtils.GetMousePos(Input.mousePosition);
+        eventData.position = Input.mousePosition;
         List<RaycastResult> raysastResults = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, raysastResults);
         return raysastResults;
     }
 
     public static Color GetUIColor(){
-        return new Color(1, 0.7647f, 0.2392f, 0.7f);
+        return new Color(1, 0.8452338f, 0.4198113f, 0.95f);
         
     }
 }

@@ -26,7 +26,7 @@ public static class AgentUtils
         return closestDistance;
     }
 
-    public static List<AgentControllerBoid> GetNeighborsInGroup(List<AgentControllerBoid> neighbors, MovementManager movementManager){
+    public static List<AgentMoveable> GetNeighborsInGroup(List<AgentMoveable> neighbors, MovementManager movementManager){
         return (movementManager != null)?neighbors.Where(neighbor => 
         {
             
@@ -35,7 +35,7 @@ public static class AgentUtils
                 return true;
             }
             return false;
-        }).ToList():new List<AgentControllerBoid>();
+        }).ToList():new List<AgentMoveable>();
     }
 
     public static Selectable GetClosestNeigborOnOtherTeam(List<Selectable> neighbors, Vector3 targetPoint, int team){
@@ -52,7 +52,7 @@ public static class AgentUtils
     }
 
     public static Selectable GetClosestNeigborOnOtherTeamProritizeUnits(List<Selectable> neighbors, Vector3 targetPoint, int team){
-        List<Selectable> ns = neighbors.Where(neighbor => neighbor is AgentControllerBoid && neighbor.team != team).Cast<Selectable>().ToList();
+        List<Selectable> ns = neighbors.Where(neighbor => neighbor is AgentMoveable && neighbor.team != team).Cast<Selectable>().ToList();
         if (ns.Count() == 0){
             //Debug.Log("no units so should return building");
             return GetClosestNeigborOnOtherTeam(neighbors, targetPoint, team);
@@ -82,8 +82,8 @@ public static class AgentUtils
         return true; // No obstacles
     }
 
-    public static List<AgentControllerBoid> GetNeighborsAgents(List<Selectable> neighbors){ 
-        return neighbors.Where(neighbor => neighbor is AgentControllerBoid).Cast<AgentControllerBoid>().ToList();
+    public static List<AgentMoveable> GetNeighborsAgents(List<Selectable> neighbors){ 
+        return neighbors.Where(neighbor => neighbor is AgentMoveable).Cast<AgentMoveable>().ToList();
     }
 
 }

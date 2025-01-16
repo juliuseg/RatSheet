@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class SelectionSelection// : MonoBehaviour
 {
@@ -20,7 +21,6 @@ public class SelectionSelection// : MonoBehaviour
     }
 
     public void SelectionBoxLogic(){
-        
         if (Input.GetMouseButtonDown(0) && !SelectionUtils.IsPointerOverUIElement())
         {
             sm.team = Input.GetKey(KeyCode.RightAlt)? 1 : 0;
@@ -47,29 +47,23 @@ public class SelectionSelection// : MonoBehaviour
                 foreach (Selectable agent in highlightedAgents)
                 {
                     if (agent != null){
-                        agent.SetSelectionCircleActive(2);
-                        sm.selectables.Add(agent);
+                        AddAgentToSelection(agent); 
                     }
                 }
 
             } else {
-                sm.selectables = SelectUnits(mouseStart, mouseStart, padding: 0.1f);
-                //print("Selecting single agent: " + selectedAgents.Count);
-                if (sm.selectables.Count > 0)
+                List<Selectable> selected = SelectUnits(mouseStart, mouseStart, padding: 0.1f);
+
+                if (selected.Count > 0)
                 {
-                    if (sm.selectables[0] != null){
-                        
-                        sm.selectables = new List<Selectable> { sm.selectables[0] };
-                        sm.selectables[0].SetSelectionCircleActive(2);
+                    
+                    if (selected[0] != null){
+                        AddAgentToSelection(selected[0]);
                     }
-
                 } 
-                
             }
-            
 
-            
-
+            sm.NotifySelectionChanged();
         }
 
         if (mouseDown){
@@ -115,31 +109,63 @@ public class SelectionSelection// : MonoBehaviour
         }
     }
 
+    void AddAgentToSelection(Selectable agent){
+        Debug.Log("adding to selection count: " + sm.selectables.Count);
+
+        agent.SetSelectionCircleActive(2);
+        sm.selectables.Add(agent);
+
+        Debug.Log("selection count after add: " + sm.selectables.Count);
+
+        
+        // Here were are sure we have a valid agent and have selected it
+        agent.health.OnDeath += () => RemoveDeadAgent(agent);
+        agent.health.OnHealthChanged += () => sm.NotifySelectionChanged();
+    }
+
+    void RemoveDeadAgent(Selectable agent){
+        sm.selectables.Remove(agent);
+        
+        sm.NotifySelectionChanged();
+        
+    }
+
+
+
     List<Selectable> SelectUnits(Vector2 startPos, Vector2 endPos, float padding = 0.07f){
         List<Selectable> selectedA = new List<Selectable>();
 
         Vector2 min = Camera.main.ScreenToWorldPoint(new Vector2(Mathf.Min(startPos.x, endPos.x), Mathf.Min(startPos.y, endPos.y)));
         Vector2 max = Camera.main.ScreenToWorldPoint(new Vector2(Mathf.Max(startPos.x, endPos.x), Mathf.Max(startPos.y, endPos.y)));
+        
+        Collider2D[] colliders = new Collider2D[0];
+        if (min != max){
+            colliders = Physics2D.OverlapAreaAll(min, max);
+        } else {
+            colliders = Physics2D.OverlapPointAll(min);
+        }
 
-        Collider2D[] colliders = Physics2D.OverlapAreaAll(min, max);
         foreach (Collider2D collider in colliders)
         {
             Selectable agent = collider.GetComponent<Selectable>();
             if (agent != null)
             {
-                if (SelectionUtils.IsPointWithinBounds(collider.transform.position, min, max, padding)) {
+                Debug.Log("col: " + collider.gameObject.name);
+
+                if ((min == max ) || SelectionUtils.IsPointWithinBounds(collider.transform.position, min, max, padding)) {
                     selectedA.Add(agent);
                 }
                 
             }
         }
+
         //print(selectedA.Count + " agents selected, colliders: " + colliders.Length);
 
         // if selection contains 1 or more units, remove all buildings. 
         bool containsAgent = false;
         foreach (Selectable agent in selectedA)
         {
-            if (agent is AgentControllerBoid)
+            if (agent is AgentMoveable)
             {
                 containsAgent = true;
             }
@@ -147,7 +173,7 @@ public class SelectionSelection// : MonoBehaviour
 
         if (containsAgent)
         {
-            selectedA = selectedA.Where(x => x is AgentControllerBoid).ToList();
+            selectedA = selectedA.Where(x => x is AgentMoveable).ToList();
         }
 
         return selectedA;

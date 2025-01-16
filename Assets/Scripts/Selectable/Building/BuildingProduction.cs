@@ -14,11 +14,15 @@ public class BuildingProduction : MonoBehaviour {
 
     public PathFindingController pfCont;
 
-    public void SetupBuildingProduction(BuildingStats _buildingStats, int _team){
+    public Transform spawnPoint;
+
+    public void SetupBuildingProduction(BuildingStats _buildingStats, int _team, Transform _spawnPoint){
         buildingStats = _buildingStats;
         team = _team;
+        spawnPoint = _spawnPoint;
 
         pfCont = GameObject.Find("PathFindingController").GetComponent<PathFindingController>();
+        productionQueue = new List<SpawnObject>();
     }
 
     public void AddToProduction(int i){
@@ -39,14 +43,15 @@ public class BuildingProduction : MonoBehaviour {
         float angle = Random.Range(0, Mathf.PI*2);
         Vector3 spawnOffset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * buildingStats.SpawnRadius;
 
-        Vector3 spawnPos = transform.position + spawnOffset;
-        AgentControllerBoid agent = SpawnAgent(spawnPos, objectToSpawn);
+        Vector3 spawnPos = spawnPoint.position;//transform.position + spawnOffset;
+        AgentMoveable agent = SpawnAgent(spawnPos, objectToSpawn);
+        
+        agent.SetSelectable(team);
 
         MovementManager mm = GetSpawningMovementManager(agent,spawnPos);
 
         pfCont.AddMM(mm);
 
-        agent.SetSelectable(team);
 
         agent.SetMovementManager(mm);
 
@@ -64,19 +69,20 @@ public class BuildingProduction : MonoBehaviour {
     }
 
 
-    MovementManager GetSpawningMovementManager(AgentControllerBoid agent, Vector3 spawnPos){
+    MovementManager GetSpawningMovementManager(AgentMoveable agent, Vector3 spawnPos){
         FlowFieldManager flowFieldManager = pfCont.GetFlowFieldManager();
         flowFieldManager.CreateGridFromMousePos(spawnPos);
-        MovementManager movementManager = new BasicMovementManager(flowFieldManager, new List<AgentControllerBoid>{agent});
+        Debug.Log("ff == null: " + (agent.arrivedHandler == null));
+        MovementManager movementManager = new BasicMovementManager(flowFieldManager, new List<AgentMoveable>{agent});
 
         return movementManager;
     }
 
-    AgentControllerBoid SpawnAgent(Vector3 spawnPos, GameObject objectToSpawn)
+    AgentMoveable SpawnAgent(Vector3 spawnPos, GameObject objectToSpawn)
     {
         GameObject pf = Instantiate(objectToSpawn, spawnPos, Quaternion.identity);
         pf.name = "Agent"+"_"+Random.Range(1000, 10000);
-        return pf.GetComponent<AgentControllerBoid>();
+        return pf.GetComponent<AgentMoveable>();
         
     }
 

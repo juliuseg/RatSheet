@@ -10,6 +10,7 @@ public class SelectableHPController : MonoBehaviour {
     public RectTransform healthBar;
 
     public event Action OnDeath;
+    public event Action OnHealthChanged;
 
     public void SetHealthInit(SelectableStats _stats){
         stats = _stats;
@@ -29,6 +30,8 @@ public class SelectableHPController : MonoBehaviour {
 
         if (health <= 0){
             OnDeath?.Invoke();
+        } else {
+            OnHealthChanged?.Invoke();
         }
 
         
@@ -44,7 +47,7 @@ public class SelectableHPController : MonoBehaviour {
         healthBar.localScale = new Vector3(GetHPPerc(), 1, 1);
     }
 
-    private float GetHPPerc(){
+    public float GetHPPerc(){
         return health / maxHealth;
     }
 

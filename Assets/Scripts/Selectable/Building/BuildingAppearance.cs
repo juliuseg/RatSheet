@@ -31,12 +31,12 @@ public class BuildingAppearance{
         else if (mode == 1)
         {
             selectionCircle.SetActive(true);
-            selectionCircle.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 0.5f);
+            selectionCircle.GetComponent<SpriteRenderer>().color = new Color(1, 0.6f, 0.1f, 0.7f);
         }
         else if (mode == 2)
         {
             selectionCircle.SetActive(true);
-            selectionCircle.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0, 0.7f);
+            selectionCircle.GetComponent<SpriteRenderer>().color = new Color(1, 1.0f, 1.0f, 1);
         }
     }
 }

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a2367159d6c40479a1d485833bf4b4, type: 3}
+  m_Name: BuildingUIInfo
+  m_EditorClassIdentifier: 
+  nameText: Barrack (Obama)
+  descriptionText: Here you can build soldiers to rage war on the middle east, no,
+    sorry, the shadow.
+  portrait: {fileID: 21300000, guid: e2e6c0093d74d498ca45d964101df4df, type: 3}
+  miniPortrait: {fileID: 21300000, guid: 52d5560b4e7ba4fea935872dbfa224ff, type: 3}
+  actionsInfos:
+  - {fileID: 11400000, guid: 05110dc87acc644ec92a5cb48baedefe, type: 2}
+  - {fileID: 11400000, guid: 5efdb7b73579b4b07ac20f8fa22bb632, type: 2}
